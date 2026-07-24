@@ -3,39 +3,45 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>私人AI工作台 v1.2</title>
+<title>私人AI工作台 v1.3</title>
 <style>
-body{font-family:Arial,"Microsoft YaHei";background:#f5f5f5;padding:12px}
-.box{max-width:700px;margin:auto;background:white;padding:15px;border-radius:16px}
-#chat{height:420px;overflow:auto;border:1px solid #ddd;padding:10px;border-radius:12px}
-.msg{padding:10px;margin:8px 0;border-radius:12px;white-space:pre-wrap}
-.user{background:#e6f0ff}
+body{font-family:"Microsoft YaHei",Arial;background:#f5f5f5;padding:12px}
+.box{max-width:720px;margin:auto;background:white;border-radius:16px;padding:16px}
+h2{text-align:center}
+#chat{height:400px;overflow:auto;border:1px solid #ddd;border-radius:12px;padding:10px}
+.msg{margin:8px 0;padding:10px;border-radius:10px;white-space:pre-wrap}
+.user{background:#e8f1ff}
 .ai{background:#eee}
-textarea,input,button{width:100%;box-sizing:border-box;padding:12px;margin-top:10px}
-button{border:0;border-radius:10px;background:#333;color:white}
+textarea,input,button{width:100%;box-sizing:border-box;padding:12px;margin-top:8px}
+button{background:#333;color:white;border:0;border-radius:10px}
+.small{font-size:13px;color:#666}
 </style>
 <script src="https://js.puter.com/v2/"></script>
 </head>
 <body>
 <div class="box">
-<h2>私人AI工作台 v1.2</h2>
-<p id="status">检测登录状态...</p>
+<h2>私人AI工作台 v1.3</h2>
+<div id="status">检测中...</div>
 <button onclick="login()">登录 Puter</button>
+
 <div id="chat"></div>
+
 <textarea id="input" placeholder="输入消息"></textarea>
 <button onclick="send()">发送</button>
+
 <hr>
-<input id="name" placeholder="助手名字">
-<textarea id="memory" placeholder="AI记忆"></textarea>
-<button onclick="save()">保存设置</button>
+<h3>AI记忆</h3>
+<p class="small">填写希望 AI 长期了解的信息，例如称呼、习惯、偏好。</p>
+<textarea id="memory" placeholder="例如：喜欢简洁回答，希望助手叫我芋圆"></textarea>
+<button onclick="saveMemory()">保存记忆</button>
+<button onclick="clearMemory()">清除记忆</button>
 </div>
 
 <script>
-let settings=JSON.parse(localStorage.getItem("ai_settings")||"{}");
-let history=JSON.parse(localStorage.getItem("chat_history")||"[]");
+let memory=localStorage.getItem("ai_memory")||"";
+let history=JSON.parse(localStorage.getItem("ai_history")||"[]");
 
-document.getElementById("name").value=settings.name||"AI助手";
-document.getElementById("memory").value=settings.memory||"";
+document.getElementById("memory").value=memory;
 
 function add(type,text){
  let d=document.createElement("div");
@@ -47,32 +53,35 @@ function add(type,text){
 
 history.forEach(x=>add(x.type,x.text));
 
-async function checkLogin(){
+async function check(){
  try{
-  document.getElementById("status").innerText=
-  await puter.auth.isSignedIn()?"已登录 Puter":"未登录 Puter";
+  let ok=await puter.auth.isSignedIn();
+  document.getElementById("status").innerText=ok?"已登录 Puter":"未登录 Puter";
  }catch(e){
   document.getElementById("status").innerText="等待登录";
  }
 }
-checkLogin();
+check();
 
 async function login(){
  try{
   await puter.auth.signIn();
-  document.getElementById("status").innerText="已登录 Puter";
+  check();
  }catch(e){
-  document.getElementById("status").innerText="登录失败："+e.message;
+  alert(e.message);
  }
 }
 
-function save(){
- settings={
-  name:document.getElementById("name").value,
-  memory:document.getElementById("memory").value
- };
- localStorage.setItem("ai_settings",JSON.stringify(settings));
- alert("保存成功");
+function saveMemory(){
+ memory=document.getElementById("memory").value;
+ localStorage.setItem("ai_memory",memory);
+ alert("记忆已保存");
+}
+
+function clearMemory(){
+ localStorage.removeItem("ai_memory");
+ document.getElementById("memory").value="";
+ alert("已清除");
 }
 
 async function send(){
@@ -84,29 +93,24 @@ async function send(){
  history.push({type:"user",text:"我："+text});
 
  try{
-  let r=await puter.ai.chat(
-  `你是${settings.name||"AI助手"}。
-用户记忆：
-${settings.memory||"暂无"}
+ let r=await puter.ai.chat(
+ `你是我的私人AI助手。
+以下是用户记忆：
+${localStorage.getItem("ai_memory")||"无"}
 
-用户：
+请根据这些信息帮助用户。
+用户说：
 ${text}`,
-  {model:"anthropic/claude-sonnet-4-6"}
-  );
+ {model:"anthropic/claude-sonnet-4-6"}
+ );
 
-  let answer;
-  if(r?.message?.content?.[0]?.text){
-    answer=r.message.content[0].text;
-  }else{
-    answer=typeof r==="string"?r:JSON.stringify(r);
-  }
-
-  add("ai","AI："+answer);
-  history.push({type:"ai",text:"AI："+answer});
-  localStorage.setItem("chat_history",JSON.stringify(history));
+ let ans=r?.message?.content?.[0]?.text || JSON.stringify(r);
+ add("ai","AI："+ans);
+ history.push({type:"ai",text:"AI："+ans});
+ localStorage.setItem("ai_history",JSON.stringify(history));
 
  }catch(e){
-  add("ai","错误："+e.message);
+ add("ai","错误："+e.message);
  }
 }
 </script>
