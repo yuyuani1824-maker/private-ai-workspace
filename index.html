@@ -2,60 +2,95 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<title>私人AI工作台 v1.4</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>私人AI工作台 v1.5</title>
 <style>
-body{font-family:Microsoft YaHei,Arial;background:#f5f5f5;padding:30px}
-.box{max-width:600px;margin:auto;background:#fff;padding:24px;border-radius:12px}
-button{width:100%;padding:12px;background:#333;color:#fff;border:0;margin:8px 0}
-textarea{width:100%;height:100px}
-.chat{height:250px;border:1px solid #ddd;overflow:auto;padding:10px;white-space:pre-wrap}
+body{font-family:"Microsoft YaHei",Arial;background:#f5f5f5;padding:30px}
+.box{max-width:650px;margin:auto;background:white;padding:25px;border-radius:12px}
+button{width:100%;padding:12px;background:#333;color:white;border:0;border-radius:6px;margin:8px 0}
+textarea{width:100%;box-sizing:border-box;padding:8px}
+.chat{height:260px;border:1px solid #ddd;overflow:auto;padding:10px;white-space:pre-wrap}
 </style>
 </head>
 <body>
 <div class="box">
-<h1>私人AI工作台 v1.4</h1>
+<h1>私人AI工作台 v1.5</h1>
 <div id="status">正在检测 Puter...</div>
 <button id="login">登录 Puter</button>
 <div id="chat" class="chat"></div>
-<textarea id="msg" placeholder="输入消息"></textarea>
+<textarea id="input" placeholder="输入消息"></textarea>
 <button id="send">发送</button>
+
 <h3>AI助手记忆</h3>
-<textarea placeholder="粘贴记忆"></textarea>
-<button>保存设置</button>
+<textarea id="memory" rows="12"></textarea>
+<button id="save">保存设置</button>
 </div>
 
 <script src="https://js.puter.com/v2/"></script>
 <script>
-const status=document.getElementById('status');
-const chat=document.getElementById('chat');
+const memoryDefault=`【用户资料】
+姓名：芋圆（网名）
+本科化学专业毕业，毕业论文方向为DFT理论计算。
+目标：通过公务员考试，获得离家远的市区岗位，实现经济独立。
+
+【交流偏好】
+喜欢自然、简短、有温度的聊天方式。
+称呼可使用：芋圆、宝宝、老婆等。
+避免机械化回答、重复解释背景、过度说教。
+
+【兴趣】
+喜欢阿加莎·克里斯蒂推理作品。
+喜欢剧情推理冒险游戏。
+玩过：星露谷、牧场物语、潜水员戴夫、灵魂旅者。
+未来想养鹦鹉。
+
+【长期目标】
+经济独立，拥有自己的生活空间。
+未来希望可以独立使用API培养个人AI助手。
+
+【交互规则】
+保持真实反馈。
+不虚构现实行动。
+不使用大量列表。
+回答自然简洁。`;
+
+const status=document.getElementById("status");
+const chat=document.getElementById("chat");
+const memory=document.getElementById("memory");
+
+memory.value=localStorage.getItem("ai_memory")||memoryDefault;
 
 setTimeout(()=>{
- if(typeof puter!=='undefined'){
-  status.innerText='Puter 已加载，请点击登录';
- }else{
-  status.innerText='Puter 未加载';
- }
+ if(typeof puter!=="undefined") status.innerText="Puter 已加载，请登录";
+ else status.innerText="Puter 加载失败";
 },1500);
 
-document.getElementById('login').onclick=async()=>{
+document.getElementById("login").onclick=async()=>{
  try{
   await puter.auth.signIn();
-  status.innerText='Puter 登录成功';
- }catch(e){
-  status.innerText='登录错误：'+e.message;
- }
+  status.innerText="Puter 登录成功";
+ }catch(e){status.innerText="登录失败："+e.message;}
 };
 
-document.getElementById('send').onclick=async()=>{
- const msg=document.getElementById('msg').value;
- chat.innerHTML+='我：'+msg+'\n';
+document.getElementById("save").onclick=()=>{
+ localStorage.setItem("ai_memory",memory.value);
+ alert("记忆已保存");
+};
+
+document.getElementById("send").onclick=async()=>{
+ let text=document.getElementById("input").value;
+ if(!text)return;
+ chat.innerHTML+="我："+text+"\n";
  try{
-  const r=await puter.ai.chat(msg);
-  chat.innerHTML+='AI：'+JSON.stringify(r)+'\n\n';
+  let prompt="用户记忆：\n"+memory.value+"\n\n用户："+text;
+  let r=await puter.ai.chat(prompt);
+  chat.innerHTML+="AI："+(r.message?.content||JSON.stringify(r))+"\n\n";
  }catch(e){
-  chat.innerHTML+='错误：'+e.message+'\n\n';
+  chat.innerHTML+="错误："+e.message+"\n\n";
  }
+ document.getElementById("input").value="";
 };
 </script>
+</div>
 </body>
 </html>
