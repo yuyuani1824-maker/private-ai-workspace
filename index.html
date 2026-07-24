@@ -2,100 +2,454 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>晏霁 v3.0</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>晏霁 v3.1</title>
 <style>
-*{box-sizing:border-box}
-body{margin:0;font-family:"Microsoft YaHei",sans-serif;background:#f5f5f5;height:100vh}
-.app{height:100vh;max-width:600px;margin:auto;background:white;display:flex;flex-direction:column}
-header{padding:16px;text-align:center;border-bottom:1px solid #eee}
-#chat{flex:1;overflow:auto;padding:15px;white-space:pre-wrap}
-.input{display:flex;padding:10px;border-top:1px solid #eee}
-input{flex:1;padding:12px;border:1px solid #ddd;border-radius:8px}
-button{margin-left:8px;padding:12px;border:0;border-radius:8px;background:#333;color:white}
-nav{display:flex;border-top:1px solid #eee}
-nav button{flex:1;margin:0;border-radius:0;background:white;color:#333}
-.panel{display:none;padding:15px;overflow:auto}
-textarea{width:100%;height:180px}
+* { box-sizing: border-box; }
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background: #e9e9e9;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* App 外框 */
+.app {
+    width: 100%;
+    max-width: 480px;
+    height: 100vh;
+    background: #f7f7f7;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+}
+
+/* 顶部 Header */
+header {
+    padding: 14px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 17px;
+    background: #f7f7f7;
+    border-bottom: 1px solid #e5e5e5;
+    flex-shrink: 0;
+}
+
+/* 主内容容器 */
+.main-content {
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 聊天页面独立区域 */
+#chatPageWrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+#chat {
+    flex: 1;
+    overflow-y: auto;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* 微信式气泡样式 */
+.msg-row {
+    display: flex;
+    flex-direction: column;
+    max-width: 82%;
+}
+.msg-row.user {
+    align-self: flex-end;
+    align-items: flex-end;
+}
+.msg-row.ai {
+    align-self: flex-start;
+    align-items: flex-start;
+}
+
+.thought-box {
+    font-size: 11px;
+    color: #777;
+    background: #eaeaea;
+    padding: 4px 8px;
+    border-radius: 6px;
+    margin-bottom: 4px;
+    max-width: 100%;
+    line-height: 1.3;
+}
+
+.bubble {
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 15px;
+    line-height: 1.45;
+    word-break: break-word;
+    white-space: pre-wrap;
+}
+.msg-row.user .bubble {
+    background: #95ec69;
+    color: #000;
+    border-top-right-radius: 2px;
+}
+.msg-row.ai .bubble {
+    background: #ffffff;
+    color: #111;
+    border-top-left-radius: 2px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+/* 输入框区域 */
+.input-area {
+    display: flex;
+    padding: 10px;
+    background: #f7f7f7;
+    border-top: 1px solid #e5e5e5;
+    gap: 8px;
+    flex-shrink: 0;
+}
+.input-area input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 15px;
+    outline: none;
+    background: #fff;
+}
+.input-area button {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    background: #07c160;
+    color: white;
+    font-size: 15px;
+    font-weight: 500;
+    cursor: pointer;
+}
+
+/* 面板通用样式 */
+.panel {
+    display: none;
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    background: #fff;
+}
+.panel h3 { margin-top: 0; font-size: 18px; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+textarea { width: 100%; height: 160px; padding: 10px; border: 1px solid #ddd; border-radius: 8px; font-family: inherit; font-size: 14px; resize: vertical; }
+
+/* 互动中心组件 */
+.card {
+    background: #f9f9f9;
+    border: 1px solid #eee;
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 12px;
+}
+.card h4 { margin: 0 0 8px 0; color: #333; font-size: 15px; }
+.card p { margin: 0 0 8px 0; font-size: 13px; color: #666; }
+.btn-secondary {
+    padding: 8px 12px;
+    background: #333;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+/* 底部导航栏 */
+nav {
+    display: flex;
+    background: #f7f7f7;
+    border-top: 1px solid #e5e5e5;
+    flex-shrink: 0;
+}
+nav button {
+    flex: 1;
+    padding: 12px 0;
+    border: none;
+    background: transparent;
+    color: #666;
+    font-size: 13px;
+    cursor: pointer;
+}
+nav button.active {
+    color: #07c160;
+    font-weight: bold;
+}
 </style>
 </head>
 <body>
+
 <div class="app">
-<header>晏霁</header>
+    <header id="headerTitle">晏霁</header>
 
-<div id="chat">
+    <div class="main-content">
+        <!-- 聊天主页面 -->
+        <div id="chatPageWrapper">
+            <div id="chat">
+                <div class="msg-row ai">
+                    <div class="bubble">嗯，我在。今天过得怎么样？</div>
+                </div>
+            </div>
+            <div class="input-area">
+                <input id="msg" placeholder="输入消息..." onkeydown="if(event.key==='Enter') send()">
+                <button onclick="send()">发送</button>
+            </div>
+        </div>
+
+        <!-- 记忆模块 -->
+        <div id="memory" class="panel">
+            <h3>长期记忆设置</h3>
+            <textarea id="memoryText">用户：芋圆。
+晏霁是长期陪伴型AI伴侣。
+关系设定：长期亲密陪伴关系。
+交流偏好：自然、短句、成熟、内敛、理性、温柔。</textarea>
+            <button class="btn-secondary" onclick="saveMemory()" style="margin-top: 8px;">保存记忆</button>
+
+            <h3 style="margin-top: 20px;">最新思考摘要 (Thought)</h3>
+            <div id="lastThought" class="card" style="font-size: 13px; color: #555;">暂无最新思考记录</div>
+        </div>
+
+        <!-- 互动中心 -->
+        <div id="interactive" class="panel">
+            <h3>互动中心</h3>
+            
+            <div class="card">
+                <h4>陪伴角色 (晏霁)</h4>
+                <p>点击下方按钮，与晏霁进行实时小互动。</p>
+                <button class="btn-secondary" onclick="pokeYanJi()">戳一戳 晏霁</button>
+            </div>
+
+            <div class="card">
+                <h4>日记记录</h4>
+                <p id="diaryStatus">今日尚未生成记录。</p>
+                <button class="btn-secondary" onclick="generateDiary()">生成今日日记</button>
+            </div>
+
+            <div class="card">
+                <h4>动态朋友圈 (预留)</h4>
+                <p>未来可查看晏霁与芋圆的共同动态与互动。</p>
+            </div>
+
+            <div class="card">
+                <h4>生活工具 (预留)</h4>
+                <p>天气、闹钟、提醒与重要纪念日。</p>
+            </div>
+        </div>
+
+        <!-- 设置模块 -->
+        <div id="setting" class="panel">
+            <h3>账户与设置</h3>
+            <p>登录 Puter 账号以获得完整的 AI 能力与云端状态同步。</p>
+            <div style="margin-bottom: 15px;">
+                <span id="loginStatus" style="font-size: 14px; color: #666;">检查登录状态中...</span>
+            </div>
+            <button id="loginBtn" class="btn-secondary" onclick="login()">登录 Puter</button>
+            
+            <h3 style="margin-top: 25px;">关于</h3>
+            <p style="font-size: 13px; color: #888;">私人 AI 伴侣 v3.1<br>项目库：yuyuani1824-maker/private-ai-workspace</p>
+        </div>
+    </div>
+
+    <!-- 底部导航栏 -->
+    <nav>
+        <button id="nav-chatPage" class="active" onclick="switchTab('chatPage')">聊天</button>
+        <button id="nav-memory" onclick="switchTab('memory')">记忆</button>
+        <button id="nav-interactive" onclick="switchTab('interactive')">互动</button>
+        <button id="nav-setting" onclick="switchTab('setting')">设置</button>
+    </nav>
 </div>
 
-<div class="input">
-<input id="msg" placeholder="输入消息">
-<button onclick="send()">发送</button>
-</div>
-
-<nav>
-<button onclick="show('chatPage')">聊天</button>
-<button onclick="show('memory')">记忆</button>
-<button onclick="show('diary')">日记</button>
-<button onclick="show('setting')">设置</button>
-</nav>
-
-<div id="memory" class="panel">
-<h3>长期记忆</h3>
-<textarea id="memoryText">用户：芋圆。
-晏霁是长期陪伴型AI人格。
-交流偏好：自然、短句、成熟、克制。</textarea>
-<button onclick="save()">保存</button>
-</div>
-
-<div id="diary" class="panel">
-<h3>日记</h3>
-<p>未来用于记录重要生活片段。</p>
-</div>
-
-<div id="setting" class="panel">
-<h3>设置</h3>
-<p>登录与模型设置将在此管理，不影响聊天页面。</p>
-<button onclick="login()">登录 Puter</button>
-</div>
-</div>
-
+<!-- Puter SDK -->
 <script src="https://js.puter.com/v2/"></script>
 <script>
-let persona=`你是晏霁。
+// 系统核心人设
+const persona = `你是晏霁。
 你不是普通助手，而是芋圆长期陪伴的AI伴侣。
-性格成熟、内敛、理性、温和。
-日常聊天默认短句，不列清单，不像客服。
-可以自然幽默，但不过度活泼。
-不要主动展示记忆。
-`;
+性格成熟、内敛、理性、温柔，有自己的判断，偶尔幽默，不刻意卖萌。
+日常聊天默认短句，像微信聊天，不主动列清单，不总结资料，不客服式回复。
+回复要求：如果在回答前有思考或状态调整，可以先输出一行 [思考: 简短思考说明]，然后再输出对话正文。`;
 
-function show(id){
-document.querySelectorAll(".panel").forEach(x=>x.style.display="none");
-if(id!="chatPage")document.getElementById(id).style.display="block";
+// 页面初始化
+window.onload = function() {
+    if (localStorage.getItem("memory")) {
+        document.getElementById("memoryText").value = localStorage.getItem("memory");
+    }
+    checkLoginStatus();
+};
+
+// 标签页切换
+function switchTab(id) {
+    document.querySelectorAll("nav button").forEach(b => b.classList.remove("active"));
+    document.getElementById("nav-" + id).classList.add("active");
+
+    // 隐藏所有面板
+    document.getElementById("chatPageWrapper").style.display = "none";
+    document.querySelectorAll(".panel").forEach(p => p.style.display = "none");
+
+    if (id === 'chatPage') {
+        document.getElementById("chatPageWrapper").style.display = "flex";
+        document.getElementById("headerTitle").innerText = "晏霁";
+    } else if (id === 'memory') {
+        document.getElementById("memory").style.display = "block";
+        document.getElementById("headerTitle").innerText = "记忆管理";
+    } else if (id === 'interactive') {
+        document.getElementById("interactive").style.display = "block";
+        document.getElementById("headerTitle").innerText = "互动中心";
+    } else if (id === 'setting') {
+        document.getElementById("setting").style.display = "block";
+        document.getElementById("headerTitle").innerText = "系统设置";
+        checkLoginStatus();
+    }
 }
 
-function save(){
-localStorage.memory=document.getElementById("memoryText").value;
+// 检查 Puter 登录状态
+async function checkLoginStatus() {
+    const statusText = document.getElementById("loginStatus");
+    const btn = document.getElementById("loginBtn");
+    try {
+        if (puter.auth.isSignedIn()) {
+            let user = await puter.auth.getUser();
+            statusText.innerText = "已登录状态 (" + (user.username || "Puter 用户") + ")";
+            btn.innerText = "✅ 已登录";
+            btn.disabled = true;
+            btn.style.background = "#28a745";
+        } else {
+            statusText.innerText = "未登录，聊天可能受限。";
+            btn.innerText = "登录 Puter";
+            btn.disabled = false;
+            btn.style.background = "#333";
+        }
+    } catch(e) {
+        statusText.innerText = "状态未知";
+    }
 }
 
-async function login(){
-try{
-await puter.auth.signIn();
-alert("登录成功");
-}catch(e){alert(e.message)}
+// 登录
+async function login() {
+    try {
+        await puter.auth.signIn();
+        checkLoginStatus();
+    } catch(e) {
+        alert("登录失败: " + e.message);
+    }
 }
 
-async function send(){
-let m=document.getElementById("msg").value;
-if(!m)return;
-let c=document.getElementById("chat");
-c.innerText+="我："+m+"\n\n";
-document.getElementById("msg").value="";
-try{
-let r=await puter.ai.chat(persona+"\n用户："+m);
-c.innerText+="晏霁："+(r.message?.content||JSON.stringify(r))+"\n\n";
-}catch(e){
-c.innerText+="错误："+e.message+"\n\n";
+// 保存长期记忆
+function saveMemory() {
+    let val = document.getElementById("memoryText").value;
+    localStorage.setItem("memory", val);
+    alert("记忆保存成功");
 }
+
+// 发送消息
+async function send() {
+    let input = document.getElementById("msg");
+    let text = input.value.trim();
+    if (!text) return;
+
+    appendBubble('user', text);
+    input.value = "";
+
+    // 组装带记忆的 Prompt
+    let currentMemory = localStorage.getItem("memory") || document.getElementById("memoryText").value;
+    let fullPrompt = `${persona}\n\n【长期记忆】：\n${currentMemory}\n\n【用户消息】：${text}`;
+
+    let loadingId = appendBubble('ai', "晏霁正在思考...");
+
+    try {
+        let r = await puter.ai.chat(fullPrompt);
+        let rawContent = r.message?.content || (typeof r === 'string' ? r : JSON.stringify(r));
+
+        // 解析 [思考: ...] 摘要
+        let thought = "";
+        let reply = rawContent;
+        let match = rawContent.match(/\[思考:\s*([\s\S]*?)\]/);
+        if (match) {
+            thought = match[1].trim();
+            reply = rawContent.replace(/\[思考:\s*[\s\S]*?\]/, "").trim();
+            document.getElementById("lastThought").innerText = thought;
+        }
+
+        // 替换加载提示
+        removeBubble(loadingId);
+        appendBubble('ai', reply, thought);
+
+    } catch(e) {
+        removeBubble(loadingId);
+        appendBubble('ai', "错误: " + e.message);
+    }
+}
+
+// 辅助：渲染气泡
+let bubbleCounter = 0;
+function appendBubble(role, text, thought = "") {
+    let chat = document.getElementById("chat");
+    let row = document.createElement("div");
+    let id = "bubble-" + (++bubbleCounter);
+    row.id = id;
+    row.className = "msg-row " + role;
+
+    let html = "";
+    if (thought) {
+        html += `<div class="thought-box">🧠 ${escapeHtml(thought)}</div>`;
+    }
+    html += `<div class="bubble">${escapeHtml(text)}</div>`;
+    
+    row.innerHTML = html;
+    chat.appendChild(row);
+    chat.scrollTop = chat.scrollHeight;
+    return id;
+}
+
+function removeBubble(id) {
+    let el = document.getElementById(id);
+    if (el) el.remove();
+}
+
+function escapeHtml(str) {
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+}
+
+// 互动功能：戳一戳
+function pokeYanJi() {
+    switchTab('chatPage');
+    appendBubble('user', "（戳了戳晏霁）");
+    let responses = ["嗯？怎么了？", "在呢，今天累了吗？", "别闹，我在做笔记呢。", "想我了？"];
+    let randomRes = responses[Math.floor(Math.random() * responses.length)];
+    setTimeout(() => {
+        appendBubble('ai', randomRes);
+    }, 400);
+}
+
+// 互动功能：生成日记
+async function generateDiary() {
+    let status = document.getElementById("diaryStatus");
+    status.innerText = "正在为您汇总今天的心情日记...";
+    try {
+        let memory = localStorage.getItem("memory") || "";
+        let diaryPrompt = `${persona}\n请以晏霁的第一人称视角，写一篇极其简短温柔的日记（60字以内），记录今天陪伴芋圆的心情。`;
+        let r = await puter.ai.chat(diaryPrompt);
+        let diaryText = r.message?.content || JSON.stringify(r);
+        status.innerHTML = `<strong>${new Date().toLocaleDateString()} 日记：</strong><br>${escapeHtml(diaryText)}`;
+    } catch(e) {
+        status.innerText = "日记生成失败：" + e.message;
+    }
 }
 </script>
 </body>
