@@ -1,0 +1,366 @@
+私人AI工作台_v1.1.html
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+
+<title>私人AI工作台 v1.1</title>
+
+<style>
+
+body{
+    font-family:Arial,"Microsoft YaHei",sans-serif;
+    background:#f5f5f5;
+    padding:15px;
+}
+
+.box{
+    max-width:700px;
+    margin:auto;
+    background:white;
+    padding:15px;
+    border-radius:15px;
+}
+
+h2{
+    text-align:center;
+}
+
+#chat{
+    height:380px;
+    overflow:auto;
+    border:1px solid #ddd;
+    padding:10px;
+    border-radius:10px;
+    background:#fafafa;
+}
+
+.msg{
+    padding:8px;
+    margin:8px 0;
+    border-radius:8px;
+    white-space:pre-wrap;
+}
+
+.user{
+    background:#e5f0ff;
+}
+
+.ai{
+    background:#eeeeee;
+}
+
+
+button,input,textarea{
+
+    width:100%;
+    padding:12px;
+    margin-top:10px;
+    box-sizing:border-box;
+
+}
+
+
+button{
+
+    background:#333;
+    color:white;
+    border:0;
+    border-radius:8px;
+
+}
+
+</style>
+
+
+<script src="https://js.puter.com/v2/"></script>
+
+</head>
+
+
+<body>
+
+
+<div class="box">
+
+
+<h2>私人AI工作台 v1.1</h2>
+
+
+<p id="status">
+检测登录状态...
+</p>
+
+
+<button onclick="login()">
+登录 Puter
+</button>
+
+
+<div id="chat"></div>
+
+
+<textarea id="input" placeholder="输入消息"></textarea>
+
+
+<button onclick="send()">
+发送
+</button>
+
+
+<hr>
+
+
+<input id="name" placeholder="助手名字">
+
+
+<textarea id="memory" placeholder="AI记忆"></textarea>
+
+
+<button onclick="save()">
+保存设置
+</button>
+
+
+</div>
+<script>
+
+let settings = JSON.parse(
+    localStorage.getItem("ai_settings") || "{}"
+);
+
+
+document.getElementById("name").value =
+    settings.name || "AI助手";
+
+
+document.getElementById("memory").value =
+    settings.memory || "";
+
+
+
+async function checkLogin(){
+
+    try{
+
+        if(puter.auth.isSignedIn()){
+
+            document.getElementById("status").innerText =
+            "已登录 Puter";
+
+        }else{
+
+            document.getElementById("status").innerText =
+            "未登录 Puter";
+
+        }
+
+    }catch(e){
+
+        document.getElementById("status").innerText =
+        "等待登录";
+
+    }
+
+}
+
+
+checkLogin();
+
+
+
+
+
+async function login(){
+
+    try{
+
+        await puter.auth.signIn();
+
+
+        document.getElementById("status").innerText =
+        "已登录 Puter";
+
+
+    }catch(e){
+
+
+        document.getElementById("status").innerText =
+        "登录失败：" + e.message;
+
+
+    }
+
+}
+
+
+
+
+
+function save(){
+
+
+    settings = {
+
+        name:
+        document.getElementById("name").value,
+
+
+        memory:
+        document.getElementById("memory").value
+
+    };
+
+
+    localStorage.setItem(
+        "ai_settings",
+        JSON.stringify(settings)
+    );
+
+
+    alert("设置保存成功");
+
+
+}
+
+
+
+
+
+function addMessage(type,text){
+
+
+    let div=document.createElement("div");
+
+
+    div.className="msg " + type;
+
+
+    div.innerText=text;
+
+
+    document.getElementById("chat")
+    .appendChild(div);
+
+
+    document.getElementById("chat")
+    .scrollTop =
+    document.getElementById("chat")
+    .scrollHeight;
+
+
+}
+
+
+async function send(){
+
+
+    let box =
+    document.getElementById("input");
+
+
+    let text =
+    box.value.trim();
+
+
+
+    if(!text){
+
+        return;
+
+    }
+
+
+
+    box.value = "";
+
+
+
+    addMessage(
+        "user",
+        "我：" + text
+    );
+
+
+
+    try{
+
+
+        let prompt = `
+
+你是${settings.name || "AI助手"}。
+
+用户记忆：
+${settings.memory || "暂无"}
+
+用户问题：
+${text}
+
+请自然地回答用户。
+
+`;
+
+
+
+        let response =
+        await puter.ai.chat(
+
+            prompt,
+
+            {
+
+                model:
+                "anthropic/claude-sonnet-4-6"
+
+            }
+
+        );
+
+
+
+        let answer =
+        typeof response === "string"
+        ?
+        response
+        :
+        JSON.stringify(response);
+
+
+
+        addMessage(
+
+            "ai",
+
+            "AI：" + answer
+
+        );
+
+
+
+    }catch(error){
+
+
+
+        addMessage(
+
+            "ai",
+
+            "调用失败：" + error.message
+
+        );
+
+
+    }
+
+
+}
+
+
+
+</script>
+
+
+</body>
+
+</html>
