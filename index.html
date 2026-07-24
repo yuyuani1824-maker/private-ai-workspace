@@ -1,65 +1,36 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>私人AI工作台 v1.3</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>私人AI工作台 v1.4</title>
+<script src="https://js.puter.com/v2/"></script>
 <style>
-body{font-family:Arial,"Microsoft YaHei",sans-serif;background:#f3f3f3;margin:0;padding:20px}
-.box{max-width:600px;margin:auto;background:white;padding:20px;border-radius:16px}
-button{width:100%;padding:14px;background:#333;color:white;border:0;border-radius:8px}
-textarea{width:100%;height:120px;margin-top:10px}
-.chat{height:300px;border:1px solid #ddd;padding:10px;overflow:auto}
+body{font-family:Arial,"Microsoft YaHei",sans-serif;background:#f5f5f5}.box{max-width:600px;margin:40px auto;background:white;padding:24px;border-radius:12px}.chat{height:300px;border:1px solid #ddd;overflow:auto;padding:10px}.me{background:#dbeafe;padding:8px;margin:6px}.ai{background:#eee;padding:8px;margin:6px}textarea{width:100%;height:80px}button{width:100%;padding:12px;margin-top:10px;background:#333;color:white;border:0;border-radius:6px}
 </style>
 </head>
 <body>
 <div class="box">
-<h1>私人AI工作台 v1.3</h1>
-<p id="status">已登录 Puter</p>
+<h1>私人AI工作台 v1.4</h1>
+<div id="status">未登录 Puter</div>
 <button onclick="login()">登录 Puter</button>
 <div class="chat" id="chat"></div>
-<textarea id="input" placeholder="输入消息"></textarea>
+<textarea id="msg" placeholder="输入消息"></textarea>
 <button onclick="send()">发送</button>
-
-<h3>AI助手</h3>
-<textarea id="prompt">你是我的私人AI助手。
-
-你的目标是成为一个长期陪伴用户的智能伙伴，而不是普通客服。
-
-交流风格：
-- 自然、温和、有亲近感
-- 像熟悉用户的朋友一样交流
-- 避免机械化、模板化表达
-- 可以适当幽默，但保持自然
-
-回答方式：
-- 默认简洁回答
-- 用户需要深入分析时，再详细说明
-- 不假装知道不存在的信息
-
-记忆规则：
-- 优先参考用户提供的长期记忆
-- 记住用户的表达习惯和偏好
-
-人格：
-可靠、耐心、聪明，有自己的判断。</textarea>
-<button onclick="save()">保存设置</button>
 </div>
-
 <script>
-function add(t){document.getElementById('chat').innerHTML+=t+'<br><br>';}
-function login(){add("系统：Puter登录状态已准备。");}
-async function send(){
- let text=document.getElementById('input').value;
- add("我："+text);
- document.getElementById('input').value="";
- try{
-  let r=await puter.ai.chat(text,{model:"claude-sonnet-4-6"});
-  let msg=typeof r==="string"?r:(r.message?.content?.[0]?.text||JSON.stringify(r));
-  add("Claude："+msg);
- }catch(e){add("错误："+e);}
+let ready=false;
+async function login(){
+ try{await puter.auth.signIn();document.getElementById('status').innerText='已登录 Puter';ready=true;}catch(e){document.getElementById('status').innerText='登录失败：'+e.message;}
 }
-function save(){localStorage.prompt=document.getElementById('prompt').value;alert("已保存");}
+function add(t,c){let d=document.createElement('div');d.className=c;d.innerText=t;document.getElementById('chat').appendChild(d)}
+async function send(){
+ let m=document.getElementById('msg').value;if(!m)return;add('我：'+m,'me');
+ try{
+ let r=await puter.ai.chat(m,{model:'claude-sonnet-4-6'});
+ add('AI：'+(r.message?.content?.[0]?.text||JSON.stringify(r)),'ai');
+ }catch(e){add('错误：'+e.message,'ai')}
+}
 </script>
 </body>
 </html>
