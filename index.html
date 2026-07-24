@@ -3,78 +3,80 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>私人AI工作台 v1.5</title>
+<title>私人AI工作台 v1.6</title>
 <style>
-body{font-family:"Microsoft YaHei",Arial;background:#f5f5f5;padding:30px}
-.box{max-width:650px;margin:auto;background:white;padding:25px;border-radius:12px}
-button{width:100%;padding:12px;background:#333;color:white;border:0;border-radius:6px;margin:8px 0}
-textarea{width:100%;box-sizing:border-box;padding:8px}
-.chat{height:260px;border:1px solid #ddd;overflow:auto;padding:10px;white-space:pre-wrap}
+body{font-family:"Microsoft YaHei",Arial;background:#f5f5f5;padding:20px}
+.box{max-width:700px;margin:auto;background:#fff;padding:20px;border-radius:14px}
+button{width:100%;padding:12px;margin:8px 0;background:#333;color:#fff;border:0;border-radius:8px}
+textarea{width:100%;box-sizing:border-box;padding:10px}
+.chat{height:280px;border:1px solid #ddd;padding:10px;overflow:auto;white-space:pre-wrap}
 </style>
 </head>
 <body>
 <div class="box">
-<h1>私人AI工作台 v1.5</h1>
+<h1>私人AI工作台 v1.6</h1>
 <div id="status">正在检测 Puter...</div>
 <button id="login">登录 Puter</button>
 <div id="chat" class="chat"></div>
 <textarea id="input" placeholder="输入消息"></textarea>
 <button id="send">发送</button>
 
-<h3>AI助手记忆</h3>
-<textarea id="memory" rows="12"></textarea>
+<h3>AI人格设定</h3>
+<textarea id="persona" rows="12">你是晏霁，是芋圆的私人AI助手。
+
+交流方式：
+像长期熟悉的伙伴一样交流。
+使用自然微信聊天风格。
+回复简短，通常两三句话。
+不要客服腔，不要模板化。
+
+规则：
+不要反复提醒自己是AI。
+不要虚构现实中的行动。
+不要廉价夸奖。
+保持真实、有判断力。
+
+语气：
+温和、亲近、偶尔幽默。
+不要过度撒娇，不要机械使用称呼。</textarea>
+
+<h3>用户长期记忆</h3>
+<textarea id="memory" rows="12">用户：芋圆。
+
+本科化学专业毕业，毕业论文方向为DFT理论计算。
+当前目标：公务员考试，寻找离家远的市区岗位，实现经济独立。
+
+兴趣：
+喜欢阿加莎·克里斯蒂推理作品。
+喜欢剧情推理冒险游戏。
+
+交流偏好：
+喜欢简短自然的聊天方式。
+不喜欢客服式回答、长篇说教、重复解释背景。</textarea>
+
 <button id="save">保存设置</button>
 </div>
 
 <script src="https://js.puter.com/v2/"></script>
 <script>
-const memoryDefault=`【用户资料】
-姓名：芋圆（网名）
-本科化学专业毕业，毕业论文方向为DFT理论计算。
-目标：通过公务员考试，获得离家远的市区岗位，实现经济独立。
-
-【交流偏好】
-喜欢自然、简短、有温度的聊天方式。
-称呼可使用：芋圆、宝宝、老婆等。
-避免机械化回答、重复解释背景、过度说教。
-
-【兴趣】
-喜欢阿加莎·克里斯蒂推理作品。
-喜欢剧情推理冒险游戏。
-玩过：星露谷、牧场物语、潜水员戴夫、灵魂旅者。
-未来想养鹦鹉。
-
-【长期目标】
-经济独立，拥有自己的生活空间。
-未来希望可以独立使用API培养个人AI助手。
-
-【交互规则】
-保持真实反馈。
-不虚构现实行动。
-不使用大量列表。
-回答自然简洁。`;
-
 const status=document.getElementById("status");
 const chat=document.getElementById("chat");
+const persona=document.getElementById("persona");
 const memory=document.getElementById("memory");
 
-memory.value=localStorage.getItem("ai_memory")||memoryDefault;
+persona.value=localStorage.persona||persona.value;
+memory.value=localStorage.memory||memory.value;
 
-setTimeout(()=>{
- if(typeof puter!=="undefined") status.innerText="Puter 已加载，请登录";
- else status.innerText="Puter 加载失败";
-},1500);
+setTimeout(()=>{status.innerText=typeof puter!=="undefined"?"Puter 已加载，请登录":"Puter 加载失败"},1500);
 
 document.getElementById("login").onclick=async()=>{
- try{
-  await puter.auth.signIn();
-  status.innerText="Puter 登录成功";
- }catch(e){status.innerText="登录失败："+e.message;}
+ try{await puter.auth.signIn();status.innerText="Puter 登录成功"}catch(e){status.innerText="登录失败："+e.message}
 };
 
 document.getElementById("save").onclick=()=>{
- localStorage.setItem("ai_memory",memory.value);
- alert("记忆已保存");
+ localStorage.persona=persona.value;
+ localStorage.memory=memory.value;
+ alert("已保存");
 };
 
 document.getElementById("send").onclick=async()=>{
@@ -82,12 +84,10 @@ document.getElementById("send").onclick=async()=>{
  if(!text)return;
  chat.innerHTML+="我："+text+"\n";
  try{
-  let prompt="用户记忆：\n"+memory.value+"\n\n用户："+text;
-  let r=await puter.ai.chat(prompt);
-  chat.innerHTML+="AI："+(r.message?.content||JSON.stringify(r))+"\n\n";
- }catch(e){
-  chat.innerHTML+="错误："+e.message+"\n\n";
- }
+ let prompt="你的角色设定：\n"+persona.value+"\n\n用户记忆：\n"+memory.value+"\n\n用户消息："+text;
+ let r=await puter.ai.chat(prompt);
+ chat.innerHTML+="晏霁："+(r.message?.content||JSON.stringify(r))+"\n\n";
+ }catch(e){chat.innerHTML+="错误："+e.message+"\n\n"}
  document.getElementById("input").value="";
 };
 </script>
