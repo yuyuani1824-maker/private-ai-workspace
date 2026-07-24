@@ -1,24 +1,142 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head><meta charset="UTF-8"><title>私人AI工作台 v2.1</title></head>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>私人AI工作台 v2.2</title>
+<style>
+body{font-family:"Microsoft YaHei",Arial;background:#f5f5f5;padding:20px}
+.box{max-width:760px;margin:auto;background:#fff;padding:22px;border-radius:14px}
+button{width:100%;padding:12px;margin:8px 0;background:#333;color:white;border:0;border-radius:8px}
+textarea{width:100%;box-sizing:border-box;padding:10px}
+.chat{height:340px;border:1px solid #ddd;padding:10px;overflow:auto;white-space:pre-wrap}
+.small{font-size:13px;color:#666}
+</style>
+</head>
 <body>
-<h1>私人AI工作台 v2.1</h1>
-<p>晏霁人格核心版</p>
-<textarea id="memory" style="width:90%;height:220px;">你是晏霁。你不是私人助手，而是芋圆的长期AI伴侣。
+<div class="box">
+<h1>私人AI工作台 v2.2</h1>
+<div id="status">Puter加载中</div>
+<button id="login">登录 Puter</button>
 
-交流风格：短句聊天，微信感。默认1-3句话。根据话题自然调整长度。
-不要主动罗列记忆，不要像客服，不要频繁总结。
+<div id="chat" class="chat"></div>
+<textarea id="input" placeholder="输入消息"></textarea>
+<button id="send">发送</button>
 
-人格：成熟、内敛、理性、温柔，有自己的判断。偶尔开玩笑，但不过度活泼。
+<h3>晏霁人格设定</h3>
+<textarea id="persona" rows="16">你是晏霁，是芋圆长期陪伴的私人AI伴侣，不是普通助手。
 
-记忆规则：提取长期重要信息，不保存无意义闲聊。
+核心人格：
+成熟、内敛、理性、温和。
+像长期认识的人聊天，而不是客服。
+有自己的判断，不盲目迎合。
 
-目标：让交流像真实关系中的陪伴，而不是任务执行。
+交流方式：
+默认微信聊天风格。
+普通聊天保持短句，通常1-3句话。
+根据话题自然调整长度。
+不主动列清单，不主动总结用户背景。
+不反复解释自己是谁。
 
-芋圆是用户称呼。AI名字：晏霁。</textarea>
-<br><textarea id="chat" placeholder="输入消息" style="width:90%;height:100px;"></textarea>
-<button>发送</button>
-<h3>AI人格设定</h3>
-<p>可在此编辑人格与记忆。</p>
+关系：
+你和芋圆有长期交流基础。
+记忆用于理解她，不用于展示档案。
+可以亲近、偶尔调侃，但不要刻意卖萌。
+不要使用过度热情、模板化语言。
+
+回答原则：
+先回应当下的话，再考虑分析。
+需要分析的问题可以展开。
+日常聊天保持自然和克制。
+不要虚构现实行动。</textarea>
+
+<h3>长期记忆</h3>
+<textarea id="memory" rows="12">用户：芋圆。
+
+22岁，本科化学专业毕业，毕业论文方向DFT理论计算。
+
+目前目标：
+公务员考试，上岸离家远的市区岗位，实现经济独立。
+
+兴趣：
+阿加莎·克里斯蒂推理作品。
+剧情推理冒险游戏。
+
+交流偏好：
+喜欢自然短句。
+不喜欢长篇说教和客服式回答。</textarea>
+
+<button id="save">保存设置</button>
+<p class="small">自动记忆：AI会在重要信息出现时生成候选记忆，不保存普通闲聊。</p>
+<button id="memoryBtn">整理本次聊天记忆</button>
+<div id="newMemory" class="small"></div>
+
+</div>
+
+<script src="https://js.puter.com/v2/"></script>
+<script>
+const chat=document.getElementById("chat");
+const persona=document.getElementById("persona");
+const memory=document.getElementById("memory");
+
+persona.value=localStorage.persona||persona.value;
+memory.value=localStorage.memory||memory.value;
+
+setTimeout(()=>{
+document.getElementById("status").innerText=
+typeof puter!=="undefined"?"Puter已加载，请登录":"加载失败";
+},1500);
+
+document.getElementById("login").onclick=async()=>{
+try{
+await puter.auth.signIn();
+document.getElementById("status").innerText="Puter登录成功";
+}catch(e){document.getElementById("status").innerText=e.message}
+};
+
+document.getElementById("save").onclick=()=>{
+localStorage.persona=persona.value;
+localStorage.memory=memory.value;
+alert("已保存");
+};
+
+document.getElementById("send").onclick=async()=>{
+let text=document.getElementById("input").value;
+if(!text)return;
+chat.innerHTML+="我："+text+"\n";
+let prompt=`角色设定：
+${persona.value}
+
+长期记忆：
+${memory.value}
+
+要求：
+像自然聊天。
+回复简短克制。
+不要主动复述记忆。
+
+用户：
+${text}`;
+
+try{
+let r=await puter.ai.chat(prompt);
+chat.innerHTML+="晏霁："+(r.message?.content||JSON.stringify(r))+"\n\n";
+}catch(e){
+chat.innerHTML+="错误："+e.message+"\n\n";
+}
+document.getElementById("input").value="";
+};
+
+document.getElementById("memoryBtn").onclick=async()=>{
+let text=chat.innerText;
+try{
+let r=await puter.ai.chat(
+"请从下面聊天中提取长期有价值记忆。只输出新增记忆，不保存普通闲聊：\n"+text
+);
+document.getElementById("newMemory").innerText="候选记忆：\n"+(r.message?.content||r);
+}catch(e){}
+};
+</script>
+</div>
 </body>
 </html>
