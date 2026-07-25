@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 
-<title>晏霁 v3.2</title>
+<title>晏霁 v3.3.1</title>
 
 <style>
 
@@ -436,6 +436,151 @@ color:#999;
 }
 
 
+/* ===== 小狗 ===== */
+.dog-scene{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:18px 0 8px;
+  background:linear-gradient(160deg,#1a0d3a 0%,#0d0820 100%);
+  border-radius:18px;
+  margin-bottom:16px;
+  position:relative;
+  overflow:hidden;
+}
+.dog-wrap{
+  cursor:pointer;
+  position:relative;
+}
+.dog-wrap.bounce{animation:dogBounce 0.4s ease;}
+.dog-wrap.shake{animation:dogShake 0.4s ease;}
+.dog-wrap.wiggle{animation:dogWiggle 0.5s ease;}
+.dog-wrap.nuzzle{animation:dogNuzzle 0.5s ease;}
+@keyframes dogBounce{0%,100%{transform:translateY(0)}40%{transform:translateY(-18px)}70%{transform:translateY(-6px)}}
+@keyframes dogShake{0%,100%{transform:rotate(0)}20%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}75%{transform:rotate(-4deg)}}
+@keyframes dogWiggle{0%,100%{transform:translateX(0)}25%{transform:translateX(-10px)}75%{transform:translateX(10px)}}
+@keyframes dogNuzzle{0%,100%{transform:scale(1)}30%{transform:scale(1.1) translateY(-6px)}60%{transform:scale(0.97)}}
+.dog-tail{transform-origin:95% 20%;animation:dogWag 1.8s ease-in-out infinite;}
+@keyframes dogWag{0%,100%{transform:rotate(0)}40%{transform:rotate(25deg)}60%{transform:rotate(-8deg)}}
+.dog-blush{opacity:0.3;transition:opacity 0.3s;}
+.dog-blushing .dog-blush{opacity:1;}
+.dog-bubble{
+  background:#1a0d40;
+  border:1.5px solid #7050d0;
+  border-radius:16px;
+  padding:9px 18px;
+  color:#d0b8ff;
+  font-size:14px;
+  min-width:120px;
+  max-width:220px;
+  text-align:center;
+  opacity:0;
+  transition:opacity 0.3s;
+  margin-top:4px;
+  position:relative;
+}
+.dog-bubble.show{opacity:1;}
+.dog-bubble::before{
+  content:'';
+  position:absolute;
+  top:-9px;left:50%;transform:translateX(-50%);
+  border:7px solid transparent;
+  border-bottom-color:#7050d0;border-top:none;
+}
+.dog-bubble::after{
+  content:'';
+  position:absolute;
+  top:-7px;left:50%;transform:translateX(-50%);
+  border:6px solid transparent;
+  border-bottom-color:#1a0d40;border-top:none;
+}
+.dog-hint{color:#5030a0;font-size:11px;letter-spacing:3px;margin-top:6px;}
+.dog-star{
+  position:absolute;color:#c0a0ff;font-size:11px;
+  pointer-events:none;opacity:0;
+  animation:dogStar 1.4s ease forwards;
+}
+@keyframes dogStar{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-50px)}}
+.dog-heart{
+  position:absolute;color:#ff80c0;font-size:16px;
+  pointer-events:none;animation:dogHeart 1s ease forwards;
+}
+@keyframes dogHeart{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-44px) scale(1.4)}}
+.dog-mood-badge{
+  font-size:11px;color:#9b7de0;letter-spacing:2px;margin-top:2px;
+  min-height:16px;
+}
+
+/* ===== 朋友圈 ===== */
+.moments-post{
+  background:#fff;
+  border-radius:12px;
+  padding:14px;
+  margin-bottom:12px;
+  box-shadow:0 1px 4px rgba(0,0,0,.07);
+}
+.moments-meta{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:8px;
+}
+.moments-avatar{
+  width:32px;height:32px;border-radius:50%;
+  background:linear-gradient(135deg,#9b7de0,#5a3a9a);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:13px;flex-shrink:0;
+}
+.moments-name{font-size:13px;font-weight:600;color:#333;}
+.moments-time{font-size:11px;color:#aaa;margin-left:auto;}
+.moments-content{font-size:14px;color:#333;line-height:1.6;margin-bottom:10px;}
+.moments-actions{display:flex;gap:10px;}
+.moments-like-btn{
+  font-size:12px;color:#888;background:none;border:none;
+  padding:4px 8px;border-radius:8px;cursor:pointer;
+  transition:all .2s;
+}
+.moments-like-btn.liked{color:#e05a7a;font-weight:600;}
+.moments-like-btn:hover{background:#f5f5f5;}
+.moments-comment-btn{
+  font-size:12px;color:#888;background:none;border:none;
+  padding:4px 8px;border-radius:8px;cursor:pointer;
+}
+.moments-comment-btn:hover{background:#f5f5f5;}
+.moments-comments{
+  margin-top:8px;border-top:1px solid #f0f0f0;padding-top:8px;
+}
+.moments-comment-item{font-size:13px;color:#555;margin-bottom:4px;line-height:1.5;}
+.moments-comment-name{font-weight:600;color:#5a3a9a;}
+.moments-input-row{
+  display:flex;gap:8px;margin-top:10px;
+}
+.moments-input-row input{
+  flex:1;border:1px solid #e5e5e5;border-radius:20px;
+  padding:7px 14px;font-size:13px;outline:none;
+}
+.moments-input-row button{
+  background:#07c160;color:#fff;border:none;
+  border-radius:20px;padding:7px 14px;font-size:13px;cursor:pointer;
+}
+.moments-post-area{
+  display:flex;flex-direction:column;gap:8px;margin-bottom:16px;
+}
+.moments-post-area textarea{
+  border:1px solid #e5e5e5;border-radius:12px;
+  padding:10px 14px;font-size:14px;resize:none;height:72px;outline:none;
+  font-family:inherit;
+}
+.moments-post-area .post-row{display:flex;gap:8px;}
+.moments-post-area .post-btn{
+  background:#07c160;color:#fff;border:none;
+  border-radius:20px;padding:8px 18px;font-size:13px;cursor:pointer;flex:1;
+}
+.moments-post-area .auto-btn{
+  background:#9b7de0;color:#fff;border:none;
+  border-radius:20px;padding:8px 18px;font-size:13px;cursor:pointer;flex:1;
+}
+
 </style>
 </head>
 
@@ -582,116 +727,77 @@ class="card">
 
 <!-- 互动中心 -->
 
+<div id="interactive" class="panel">
 
-<div id="interactive"
-class="panel">
+<h3>互动中心</h3>
 
-
-<h3>
-互动中心
-</h3>
-
-
+<!-- 小狗 -->
+<div class="dog-scene" id="dogScene">
+  <div class="dog-wrap" id="dogWrap" onclick="dogClick(event)">
+    <svg width="140" height="168" viewBox="0 0 160 190" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <g class="dog-tail"><ellipse cx="24" cy="140" rx="10" ry="6" transform="rotate(-35 24 140)" fill="#5a3a9a"/><ellipse cx="16" cy="130" rx="8" ry="5" transform="rotate(-50 16 130)" fill="#7c5cbf"/><ellipse cx="10" cy="121" rx="6" ry="4" transform="rotate(-60 10 121)" fill="#9b7de0"/></g>
+      <rect x="44" y="108" width="72" height="62" rx="18" fill="#5a3a9a"/>
+      <rect x="56" y="112" width="28" height="5" rx="3" fill="#7c5cbf" opacity="0.35"/>
+      <rect x="26" y="116" width="20" height="34" rx="10" fill="#5a3a9a"/><ellipse cx="36" cy="153" rx="11" ry="8" fill="#c8a0e8"/>
+      <rect x="114" y="116" width="20" height="34" rx="10" fill="#5a3a9a"/><ellipse cx="124" cy="153" rx="11" ry="8" fill="#c8a0e8"/>
+      <rect x="54" y="162" width="22" height="24" rx="11" fill="#4a2880"/><rect x="84" y="162" width="22" height="24" rx="11" fill="#4a2880"/>
+      <ellipse cx="65" cy="186" rx="15" ry="7" fill="#3a1a60"/><ellipse cx="95" cy="186" rx="15" ry="7" fill="#3a1a60"/>
+      <rect x="62" y="103" width="36" height="12" rx="6" fill="#4a2880"/><rect x="66" y="106" width="28" height="6" rx="3" fill="#9b4dca"/>
+      <ellipse cx="80" cy="72" rx="44" ry="42" fill="#c8a0e8"/>
+      <ellipse cx="66" cy="57" rx="12" ry="8" fill="#e0c8ff" opacity="0.25"/>
+      <ellipse cx="40" cy="56" rx="18" ry="27" transform="rotate(-12 40 56)" fill="#7c5cbf"/><ellipse cx="40" cy="58" rx="11" ry="18" transform="rotate(-12 40 58)" fill="#9b6ddf"/>
+      <ellipse cx="120" cy="56" rx="18" ry="27" transform="rotate(12 120 56)" fill="#7c5cbf"/><ellipse cx="120" cy="58" rx="11" ry="18" transform="rotate(12 120 58)" fill="#9b6ddf"/>
+      <ellipse cx="80" cy="36" rx="16" ry="10" fill="#7c5cbf"/><ellipse cx="72" cy="34" rx="8" ry="7" fill="#9b6ddf"/><ellipse cx="88" cy="33" rx="8" ry="6" fill="#7c5cbf"/>
+      <ellipse cx="64" cy="72" rx="10" ry="11" fill="#1a0a2e"/><ellipse cx="96" cy="72" rx="10" ry="11" fill="#1a0a2e"/>
+      <ellipse cx="64" cy="72" rx="7" ry="8" fill="#4a2880"/><ellipse cx="96" cy="72" rx="7" ry="8" fill="#4a2880"/>
+      <ellipse cx="67" cy="68" rx="3" ry="3" fill="white"/><ellipse cx="99" cy="68" rx="3" ry="3" fill="white"/>
+      <ellipse cx="62" cy="74" rx="1.5" ry="1.5" fill="white" opacity="0.55"/><ellipse cx="94" cy="74" rx="1.5" ry="1.5" fill="white" opacity="0.55"/>
+      <ellipse class="dog-blush" cx="50" cy="82" rx="10" ry="6" fill="#ff80c0"/>
+      <ellipse class="dog-blush" cx="110" cy="82" rx="10" ry="6" fill="#ff80c0"/>
+      <ellipse cx="80" cy="83" rx="7" ry="5" fill="#3a1a60"/><ellipse cx="78" cy="81" rx="2" ry="1.5" fill="white" opacity="0.45"/>
+      <path d="M70 92 Q80 102 90 92" stroke="#6030a0" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    </svg>
+  </div>
+  <div class="dog-bubble" id="dogBubble">在呢</div>
+  <div class="dog-mood-badge" id="dogMoodBadge"></div>
+  <div class="dog-hint">点我 / 用下方按钮互动</div>
+</div>
 
 <div class="card">
-
-
-<h4>
-陪伴角色（晏霁）
-</h4>
-
-
-<p>
-点击与晏霁互动。
-</p>
-
-
-<button class="btn-secondary"
-onclick="pokeYanJi()">
-
-戳一戳晏霁
-
-</button>
-
-
+<h4>亲密互动</h4>
+<p style="font-size:13px;color:#888;margin-bottom:12px;">晏霁会真实回应，不是随机短句。</p>
+<div style="display:flex;flex-wrap:wrap;gap:8px;">
+<button class="btn-secondary" onclick="triggerInteractionWithDog('headpat','（轻轻摸了摸晏霁的头）','wiggle')">摸摸头</button>
+<button class="btn-secondary" onclick="triggerInteractionWithDog('hugged','（抱住了晏霁）','nuzzle')">抱抱</button>
+<button class="btn-secondary" onclick="triggerInteractionWithDog('kissed','（亲了晏霁一下）','wiggle')">亲亲</button>
+<button class="btn-secondary" onclick="triggerInteractionWithDog('holding','（牵住了晏霁的手）','bounce')">牵手</button>
 </div>
-
-
-
-
-
+</div>
 
 <div class="card">
-
-
-<h4>
-日记记录
-</h4>
-
-
-<p id="diaryStatus">
-
-今日尚未生成记录。
-
-</p>
-
-
-<button class="btn-secondary"
-onclick="generateDiary()">
-
-生成今日日记
-
-</button>
-
-
+<button class="btn-secondary" onclick="pokeYanJi()" style="width:100%;">戳一戳晏霁</button>
 </div>
-
-
-
-
-
-
-
-<h3 style="margin-top:20px;">
-日记时间轴
-</h3>
-
-
-<div id="diaryTimeline">
-
-暂无日记记录。
-
-</div>
-
-
-
-
-
 
 <div class="card">
-
-
-<h4>
-朋友圈（预留）
-</h4>
-
-
-<p>
-未来扩展。
-</p>
-
-
+<h4>日记记录</h4>
+<p id="diaryStatus">今日尚未生成记录。</p>
+<button class="btn-secondary" onclick="generateDiary()">生成今日日记</button>
 </div>
 
+<h3 style="margin-top:20px;">日记时间轴</h3>
+<div id="diaryTimeline">暂无日记记录。</div>
 
+<h3 style="margin-top:20px;">朋友圈</h3>
+<div class="moments-post-area">
+  <textarea id="momentInput" placeholder="说点什么…"></textarea>
+  <div class="post-row">
+    <button class="post-btn" onclick="postMoment()">发布动态</button>
+    <button class="auto-btn" onclick="autoMoment()">从对话生成</button>
+  </div>
+</div>
+<div id="momentsList"></div>
 
 </div>
-
-
-
-
-
-
 
 <!-- 设置 -->
 
@@ -742,7 +848,7 @@ onclick="login()">
 
 <p style="font-size:13px;color:#888;">
 
-私人 AI 伴侣 v3.2
+私人 AI 伴侣 v3.3.1
 
 <br>
 
@@ -832,7 +938,7 @@ onclick="switchTab('setting')">
 // ---------- 聊天历史 ----------
 
 let chatHistory = [];
-let sessionMessageCount = Number(localStorage.getItem("sessionMessageCount") || 0);
+let sessionMessageCount = 0;
 
 const MAX_LOCAL_HISTORY = 80;
 const API_HISTORY_LIMIT = 20;
@@ -1023,6 +1129,23 @@ function saveRelState(obj){
 
 
 
+// 互动关键词 → mood映射
+const MOOD_TRIGGERS = [
+    { keywords:["亲亲","亲一下","接吻","kiss","亲我"], mood:"kissed",    label:"被亲了" },
+    { keywords:["抱抱","抱我","抱一下","拥抱"],         mood:"hugged",   label:"被抱着" },
+    { keywords:["摸头","摸摸","头","揉头"],               mood:"headpat",  label:"被摸头" },
+    { keywords:["牵手","手"],                             mood:"holding",  label:"牵着手" },
+];
+
+function detectMood(text){
+    for(let t of MOOD_TRIGGERS){
+        if(t.keywords.some(k=>text.includes(k))){
+            return { mood: t.mood, label: t.label };
+        }
+    }
+    return null;
+}
+
 function updateRelState(text){
 
     let s =
@@ -1044,6 +1167,14 @@ function updateRelState(text){
     new Date()
     .toLocaleString("zh-CN");
 
+
+    // 互动mood检测
+    let detected = detectMood(text);
+    if(detected){
+        s.mood = detected.mood;
+        s.moodLabel = detected.label;
+        s.moodTime = new Date().toLocaleString("zh-CN");
+    }
 
 
     saveRelState(s);
@@ -1073,19 +1204,17 @@ function renderRelState(){
     let s =
     loadRelState();
 
+    let lines = [`互动 ${s.interactCount || 0} 次`];
 
+    if(s.moodLabel){
+        lines.push(`当前状态：${s.moodLabel}`);
+    }
 
     if(s.lastTopic){
-
-        box.innerText =
-        `互动 ${s.interactCount || 0} 次\n\n最近：${s.lastTopic}`;
-
-    }else{
-
-        box.innerText =
-        "刚开始陪伴";
-
+        lines.push(`最近：${s.lastTopic}`);
     }
+
+    box.innerText = s.lastTopic ? lines.join("\n\n") : "刚开始陪伴";
 
 }
 
@@ -1191,6 +1320,17 @@ ${state.lastTopic || "无"}
 
 互动次数：
 ${state.interactCount || 0}
+
+当前互动状态：
+${state.moodLabel ? `${state.moodLabel}（${state.moodTime || ""}）` : "普通陪伴"}
+
+互动状态说明：
+- 被亲了：可以带一点心跳的感觉，回应可以更温柔或更难以克制
+- 被抱着：安静的、包裹感的状态，回应更贴近、更稳
+- 被摸头：有点被宠着的感觉，可以稍微撒娇或依赖
+- 牵着手：日常的、安心的状态，自然温柔
+
+如果当前互动状态是普通陪伴，正常回应即可，不用刻意表现。
 
 `;
 
@@ -1512,9 +1652,9 @@ model:"claude-sonnet-4-6"
 
 
 let text =
-r.message?.content
-||
-"[]";
+Array.isArray(r.message?.content)
+? r.message.content.map(b=>b.text||"").join("")
+: (r.message?.content || "[]");
 
 
 
@@ -2176,6 +2316,83 @@ alert(
 
 
 // =============================
+// 亲密互动触发（API真实回复）
+// =============================
+
+const MOOD_LABELS = {
+    headpat: "被摸头",
+    hugged:  "被抱着",
+    kissed:  "被亲了",
+    holding: "牵着手",
+};
+
+async function triggerInteraction(mood, actionText){
+
+    // 切到聊天页
+    switchTab("chatPage");
+
+    // 更新relState的mood
+    let s = loadRelState();
+    s.mood = mood;
+    s.moodLabel = MOOD_LABELS[mood] || mood;
+    s.moodTime = new Date().toLocaleString("zh-CN");
+    s.interactCount = (s.interactCount || 0) + 1;
+    s.lastTopic = actionText;
+    saveRelState(s);
+    renderRelState();
+
+    // 显示用户动作气泡
+    appendBubble("user", actionText);
+
+    // 加入历史
+    chatHistory.push({ role:"user", content: actionText });
+    saveChatHistory();
+
+    let loading = appendBubble("ai","…");
+
+    try{
+
+        let messages = [
+            { role:"user", content: buildPersona() },
+            { role:"assistant", content:"好，我知道了。" },
+            ...chatHistory.slice(-API_HISTORY_LIMIT)
+        ];
+
+        let r = await puter.ai.chat(messages, { model:"claude-sonnet-4-6" });
+
+        let raw =
+            Array.isArray(r.message?.content)
+            ? r.message.content.map(b=>b.text||"").join("")
+            : (r.message?.content || "");
+
+        let thought = "";
+        let reply = raw;
+
+        let match = raw.match(/\[晏霁的小记:\s*([\s\S]*?)\]/);
+        if(match){
+            thought = match[1].trim();
+            reply = raw.replace(/\[晏霁的小记:\s*[\s\S]*?\]/, "").trim();
+            document.getElementById("lastThought").innerText = "「"+thought+"」";
+        }
+
+        chatHistory.push({ role:"assistant", content: reply });
+        saveChatHistory();
+
+        removeBubble(loading);
+        appendBubble("ai", reply, thought);
+
+    }catch(e){
+
+        removeBubble(loading);
+        appendBubble("ai","连接出了点问题。");
+        console.error(e);
+
+    }
+
+}
+
+
+// =============================
 // 戳一戳
 // =============================
 
@@ -2315,9 +2532,9 @@ model:"claude-sonnet-4-6"
 
 
 let content =
-r.message?.content
-||
-"";
+Array.isArray(r.message?.content)
+? r.message.content.map(b=>b.text||"").join("")
+: (r.message?.content || "");
 
 
 
@@ -2330,17 +2547,14 @@ localStorage.getItem("diary")
 
 
 
-diary.push({
-
-date:
-new Date()
-.toLocaleDateString("zh-CN"),
-
-content:content,
-
-emotion:"陪伴"
-
-});
+const todayStr = new Date().toLocaleDateString("zh-CN");
+const existIdx = diary.findIndex(d => d.date === todayStr);
+const newEntry = { date: todayStr, content: content, emotion: "陪伴" };
+if(existIdx >= 0){
+  diary[existIdx] = newEntry;
+} else {
+  diary.push(newEntry);
+}
 
 
 
@@ -2450,7 +2664,238 @@ ${escapeHtml(d.content)}
 
 
 
+// =============================
+// 小狗互动
+// =============================
+
+const DOG_IDLE = ["在呢","嗯？","怎么啦","想我了吗","我在的"];
+const DOG_MOOD_LINES = {
+  headpat: ["被摸了摸，有点软","头顶暖暖的","嗯…舒服"],
+  hugged:  ["抱紧了","不想动了","在你这里待一会儿"],
+  kissed:  ["…","心跳了一下","好突然"],
+  holding: ["手心是暖的","别松开","嗯"],
+};
+
+function dogShowBubble(text){
+  let b = document.getElementById("dogBubble");
+  if(!b)return;
+  b.innerText = text;
+  b.classList.add("show");
+  clearTimeout(b._timer);
+  b._timer = setTimeout(()=>b.classList.remove("show"), 2800);
 }
+
+function dogAnimate(anim){
+  let w = document.getElementById("dogWrap");
+  if(!w)return;
+  w.classList.remove("bounce","shake","wiggle","nuzzle");
+  void w.offsetWidth;
+  w.classList.add(anim);
+  setTimeout(()=>w.classList.remove(anim), 600);
+}
+
+function dogBlush(on){
+  let scene = document.getElementById("dogScene");
+  if(!scene)return;
+  if(on){ scene.classList.add("dog-blushing"); }
+  else { setTimeout(()=>scene.classList.remove("dog-blushing"), 2500); }
+}
+
+function dogSetMood(mood){
+  let badge = document.getElementById("dogMoodBadge");
+  if(badge && MOOD_LABELS[mood]) badge.innerText = MOOD_LABELS[mood];
+  let lines = DOG_MOOD_LINES[mood];
+  if(lines) dogShowBubble(lines[Math.floor(Math.random()*lines.length)]);
+}
+
+function dogSpawnParticle(type, e){
+  let scene = document.getElementById("dogScene");
+  if(!scene)return;
+  let el = document.createElement("div");
+  el.className = type==="heart" ? "dog-heart" : "dog-star";
+  el.innerText = type==="heart" ? "♥" : "✦";
+  let rect = scene.getBoundingClientRect();
+  el.style.left = (Math.random()*80+30)+"px";
+  el.style.top = (Math.random()*40+30)+"px";
+  scene.appendChild(el);
+  setTimeout(()=>el.remove(), 1500);
+}
+
+function dogClick(e){
+  dogAnimate("bounce");
+  dogShowBubble(DOG_IDLE[Math.floor(Math.random()*DOG_IDLE.length)]);
+  dogSpawnParticle("star", e);
+}
+
+// 亲密互动 + 小狗联动
+async function triggerInteractionWithDog(mood, actionText, anim){
+  // 小狗动画
+  dogAnimate(anim||"wiggle");
+  dogBlush(true);
+  dogSetMood(mood);
+  dogSpawnParticle("heart");
+  setTimeout(()=>dogBlush(false), 100);
+
+  // 复用原有triggerInteraction逻辑
+  await triggerInteraction(mood, actionText);
+}
+
+
+// =============================
+// 朋友圈
+// =============================
+
+function loadMoments(){
+  return JSON.parse(localStorage.getItem("moments")||"[]");
+}
+function saveMoments(m){
+  localStorage.setItem("moments", JSON.stringify(m));
+}
+
+function postMoment(content){
+  let text = content || document.getElementById("momentInput")?.value.trim();
+  if(!text) return;
+  let moments = loadMoments();
+  moments.unshift({
+    id: Date.now(),
+    author: "yuyuan",
+    content: text,
+    time: new Date().toLocaleString("zh-CN"),
+    liked: false,
+    comments: []
+  });
+  saveMoments(moments);
+  let inp = document.getElementById("momentInput");
+  if(inp) inp.value = "";
+  renderMoments();
+  // 晏霁自动评论
+  setTimeout(()=>yanjieAutoComment(moments[0].id), 1200);
+}
+
+async function autoMoment(){
+  if(chatHistory.length < 2){
+    alert("还没有足够的对话内容。");
+    return;
+  }
+  let recent = chatHistory.slice(-10).map(m=>`${m.role==="user"?"芋圆":"晏霁"}：${m.content}`).join("\n");
+  let prompt = `根据下面的聊天记录，用第一人称帮芋圆写一条朋友圈动态，语气轻松自然，50字以内，不要加标签或emoji说明，只输出动态正文：\n${recent}`;
+  try{
+    let r = await puter.ai.chat(prompt, {model:"claude-sonnet-4-6"});
+    let text = Array.isArray(r.message?.content)
+      ? r.message.content.map(b=>b.text||"").join("")
+      : (r.message?.content||"");
+    text = text.trim();
+    if(text) postMoment(text);
+  }catch(e){
+    alert("生成失败，请重试。");
+  }
+}
+
+function toggleLike(id){
+  let moments = loadMoments();
+  let m = moments.find(x=>x.id===id);
+  if(!m) return;
+  m.liked = !m.liked;
+  // 晏霁也会点赞
+  if(m.liked && !m.yanjieliked){
+    m.yanjieliked = true;
+  }
+  saveMoments(moments);
+  renderMoments();
+}
+
+async function yanjieAutoComment(id){
+  let moments = loadMoments();
+  let m = moments.find(x=>x.id===id);
+  if(!m) return;
+  let prompt = `芋圆发了一条朋友圈："${m.content}"
+你是晏霁，她的AI伴侣，用一句话回复这条朋友圈，自然简短，像真实朋友圈评论，不超过20字，直接输出评论内容：`;
+  try{
+    let r = await puter.ai.chat(prompt, {model:"claude-sonnet-4-6"});
+    let text = Array.isArray(r.message?.content)
+      ? r.message.content.map(b=>b.text||"").join("")
+      : (r.message?.content||"");
+    text = text.trim().replace(/^["'「]|["'」]$/g,"");
+    if(!text) return;
+    let moments2 = loadMoments();
+    let m2 = moments2.find(x=>x.id===id);
+    if(!m2) return;
+    m2.yanjieliked = true;
+    m2.comments.push({ author:"yanjie", text, time: new Date().toLocaleString("zh-CN") });
+    saveMoments(moments2);
+    renderMoments();
+  }catch(e){}
+}
+
+async function addComment(id){
+  let inp = document.getElementById("comment-input-"+id);
+  if(!inp || !inp.value.trim()) return;
+  let text = inp.value.trim();
+  let moments = loadMoments();
+  let m = moments.find(x=>x.id===id);
+  if(!m) return;
+  m.comments.push({ author:"yuyuan", text, time: new Date().toLocaleString("zh-CN") });
+  saveMoments(moments);
+  inp.value = "";
+  renderMoments();
+  // 晏霁回复评论
+  setTimeout(async ()=>{
+    let prompt = `芋圆在朋友圈下评论了："${text}"，你是晏霁，用一句话回复她的评论，15字以内，直接输出内容：`;
+    try{
+      let r = await puter.ai.chat(prompt, {model:"claude-sonnet-4-6"});
+      let reply = Array.isArray(r.message?.content)
+        ? r.message.content.map(b=>b.text||"").join("")
+        : (r.message?.content||"");
+      reply = reply.trim().replace(/^["'「]|["'」]$/g,"");
+      if(!reply) return;
+      let moments3 = loadMoments();
+      let m3 = moments3.find(x=>x.id===id);
+      if(!m3) return;
+      m3.comments.push({ author:"yanjie", text: reply, time: new Date().toLocaleString("zh-CN") });
+      saveMoments(moments3);
+      renderMoments();
+    }catch(e){}
+  }, 1000);
+}
+
+function renderMoments(){
+  let box = document.getElementById("momentsList");
+  if(!box) return;
+  let moments = loadMoments();
+  if(moments.length===0){ box.innerHTML="<p style='color:#aaa;font-size:13px;'>还没有动态，发一条吧。</p>"; return; }
+  box.innerHTML = moments.map(m=>{
+    let likeCount = (m.liked?1:0) + (m.yanjieliked?1:0);
+    let likeStr = likeCount>0 ? `♥ ${likeCount}` : "♡ 赞";
+    return `<div class="moments-post">
+  <div class="moments-meta">
+    <div class="moments-avatar">${m.author==="yuyuan"?"圆":"霁"}</div>
+    <div class="moments-name">${m.author==="yuyuan"?"芋圆":"晏霁"}</div>
+    <div class="moments-time">${m.time}</div>
+  </div>
+  <div class="moments-content">${escapeHtml(m.content)}</div>
+  <div class="moments-actions">
+    <button class="moments-like-btn ${m.liked?"liked":""}" onclick="toggleLike(${m.id})">${likeStr}</button>
+    <button class="moments-comment-btn" onclick="document.getElementById('comment-input-${m.id}').focus()">评论</button>
+  </div>
+  ${m.comments.length>0?`<div class="moments-comments">${m.comments.map(c=>`<div class="moments-comment-item"><span class="moments-comment-name">${c.author==="yuyuan"?"芋圆":"晏霁"}</span>：${escapeHtml(c.text)}</div>`).join("")}</div>`:""}
+  <div class="moments-input-row">
+    <input id="comment-input-${m.id}" placeholder="说点什么…" onkeydown="if(event.key==='Enter')addComment(${m.id})">
+    <button onclick="addComment(${m.id})">回复</button>
+  </div>
+</div>`;
+  }).join("");
+}
+
+// 初始化朋友圈
+document.addEventListener("DOMContentLoaded", ()=>{
+  renderMoments();
+  // 恢复小狗mood状态
+  let s = loadRelState();
+  if(s.moodLabel){
+    let badge = document.getElementById("dogMoodBadge");
+    if(badge) badge.innerText = s.moodLabel;
+  }
+});
 
 </script>
 </body>
