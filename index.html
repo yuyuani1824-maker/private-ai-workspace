@@ -588,6 +588,41 @@ color:#999;
   border-radius:20px;padding:8px 18px;font-size:13px;cursor:pointer;flex:1;
 }
 
+
+/* ===== v3.5 聊天布局优化 ===== */
+
+/* 页面整体布局 */
+body{
+    display:flex;
+    flex-direction:column;
+    height:100vh;
+    overflow:hidden;
+}
+
+/* 小狗scene区域 */
+#dogScene,
+.dog-scene,
+.scene{
+    flex:0 0 auto;
+    max-height:220px;
+    overflow:hidden;
+}
+
+/* 对话气泡区域 */
+#chatBox,
+.chat-box,
+.messages{
+    flex:1;
+    min-height:0;
+    overflow-y:auto;
+}
+
+/* 输入区域固定 */
+.input-area,
+.chat-input-area{
+    flex:0 0 auto;
+}
+
 </style>
 </head>
 
@@ -943,7 +978,20 @@ onclick="switchTab('setting')">
 
 <!-- Puter -->
 
-<script src="https://js.puter.com/v2/"></script>
+<script src="https://js.puter.com/v2/">
+// ===== v3.5.1 布局初始化 =====
+function initChatLayoutV35(){
+    const chat=document.querySelector("#chatBox,.chat-box,.messages");
+    if(chat){
+        chat.style.flex="1";
+        chat.style.minHeight="0";
+        chat.style.overflowY="auto";
+    }
+}
+
+document.addEventListener("DOMContentLoaded",initChatLayoutV35);
+
+</script>
 <script>
 // =============================
 // 晏霁 v3.2 核心系统
@@ -1229,7 +1277,7 @@ function renderRelState(){
         lines.push(`最近：${s.lastTopic}`);
     }
 
-    box.innerText = s.lastTopic ? lines.join("\n") : "刚开始陪伴"
+    box.innerText = s.lastTopic ? lines.join("\n") : "刚开始陪伴";
 
 
 
@@ -1237,7 +1285,7 @@ function renderRelState(){
 
 
 
-}// ---------- Persona ----------
+// ---------- Persona ----------
 
 
 function buildPersona(){
