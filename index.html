@@ -1291,12 +1291,9 @@ model:"claude-sonnet-4-6"
 
 
 let raw =
-r.message?.content
-||
-(typeof r==="string"
-?r
-:JSON.stringify(r));
-
+Array.isArray(r.message?.content)
+? r.message.content.map(b=>b.text||"").join("")
+: (r.message?.content || "");
 
 
 
