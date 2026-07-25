@@ -692,6 +692,27 @@ nav button{
 .heart-value{margin-top:3px;color:#e05a7a;}
 .heart-state{font-size:12px;color:#777;}
 
+
+/* v3.5.3 时间与心率优化 */
+.msg-time{
+    font-size:10px;
+    color:#aaa;
+    margin-top:3px;
+}
+.heart-trend{
+    font-size:12px;
+    color:#777;
+}
+.yj-log-mini{
+    background:#fff;
+    border-radius:10px;
+    padding:10px;
+    margin-bottom:12px;
+    font-size:13px;
+    line-height:1.5;
+    border:1px solid #eee;
+}
+
 </style>
 </head>
 
@@ -903,6 +924,9 @@ class="card">
 
 <h3 style="margin-top:20px;">日记时间轴</h3>
 <div id="diaryTimeline">暂无日记记录。</div>
+<h3 style="margin-top:20px;">晏霁日志</h3>
+<div id="yjLogBox" class="yj-log-mini">暂无日志。</div>
+
 
 <h3 style="margin-top:20px;">朋友圈</h3>
 <div class="moments-post-area">
@@ -1504,6 +1528,7 @@ input.value="";
 
 
 updateRelState(text);
+    if(window.yjHeartBoost) yjHeartBoost();
 
 
 
@@ -1980,6 +2005,7 @@ html+=`
 ${escapeHtml(text)}
 
 </div>
+<div class="msg-time">${new Date().toLocaleTimeString("zh-CN",{hour:"2-digit",minute:"2-digit"})}</div>
 
 `;
 
@@ -2456,6 +2482,7 @@ const MOOD_LABELS = {
 };
 
 async function triggerInteraction(mood, actionText){
+    if(window.yjHeartBoost) yjHeartBoost();
 
     // 切到聊天页
     switchTab("chatPage");
@@ -3023,6 +3050,7 @@ function renderMoments(){
 // 初始化朋友圈
 document.addEventListener("DOMContentLoaded", ()=>{
   renderMoments();
+  renderYJLog();
   // 恢复小狗mood状态
   let s = loadRelState();
   if(s.moodLabel){
@@ -3086,13 +3114,26 @@ function importYanJiData(){
 
 <script>
 (function(){
+let heartValue=74;
+let heartActivity=0;
 function updateHeart(){
  const el=document.getElementById("heartRate");
- if(el){
-   el.textContent=70+Math.floor(Math.random()*11);
+ const state=document.querySelector(".heart-state");
+ if(!el)return;
+ const target=heartActivity>0?88:68;
+ heartValue += (target-heartValue)*0.12 + (Math.random()-0.5)*2;
+ heartValue=Math.max(55,Math.min(110,Math.round(heartValue)));
+ el.textContent=heartValue;
+ if(state){
+   state.textContent=heartActivity>0?"状态：互动升温":"状态：平静";
  }
+ if(heartActivity>0) heartActivity--;
 }
-setInterval(updateHeart,5000);
+window.yjHeartBoost=function(){
+ heartActivity=12;
+};
+setInterval(updateHeart,3000);
+const oldSend=window.send;
 })();
 </script>
 </body>
