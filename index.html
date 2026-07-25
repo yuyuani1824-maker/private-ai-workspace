@@ -1271,11 +1271,7 @@ content:"好，我知道了。"
 
 
 ...chatHistory.slice(
--chatHistory.length > API_HISTORY_LIMIT
-?
-API_HISTORY_LIMIT
-:
-chatHistory.length
+-API_HISTORY_LIMIT
 )
 
 ];
@@ -1406,7 +1402,7 @@ loading
 
 appendBubble(
 "ai",
-""错误信息：" + JSON.stringify(e)"
+"连接出了点问题。"
 );
 
 
