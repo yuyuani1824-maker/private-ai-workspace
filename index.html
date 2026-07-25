@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 
-<title>晏霁 v3.3.1</title>
+<title>晏霁 v3.4</title>
 
 <style>
 
@@ -534,7 +534,7 @@ color:#999;
 .moments-name{font-size:13px;font-weight:600;color:#333;}
 .moments-time{font-size:11px;color:#aaa;margin-left:auto;}
 .moments-content{font-size:14px;color:#333;line-height:1.6;margin-bottom:10px;}
-.moments-actions{display:flex;gap:10px;}
+.moments-actions{display:flex;gap:10px;align-items:center;}
 .moments-like-btn{
   font-size:12px;color:#888;background:none;border:none;
   padding:4px 8px;border-radius:8px;cursor:pointer;
@@ -547,6 +547,13 @@ color:#999;
   padding:4px 8px;border-radius:8px;cursor:pointer;
 }
 .moments-comment-btn:hover{background:#f5f5f5;}
+.moments-delete-btn{
+  font-size:12px;color:#999;background:none;border:none;
+  padding:4px 8px;border-radius:8px;cursor:pointer;
+  margin-left:auto;
+  transition:all .2s;
+}
+.moments-delete-btn:hover{background:#fff0f0;color:#e05a7a;}
 .moments-comments{
   margin-top:8px;border-top:1px solid #f0f0f0;padding-top:8px;
 }
@@ -841,6 +848,14 @@ onclick="login()">
 
 
 <h3 style="margin-top:25px;">
+数据备份
+</h3>
+
+<button class="btn-secondary" onclick="exportYanJiData()">导出晏霁数据</button>
+<button class="btn-secondary" onclick="importYanJiData()" style="margin-left:8px;">导入数据</button>
+<input type="file" id="yanjiImportFile" accept="application/json" style="display:none">
+
+<h3 style="margin-top:25px;">
 关于
 
 </h3>
@@ -848,7 +863,7 @@ onclick="login()">
 
 <p style="font-size:13px;color:#888;">
 
-私人 AI 伴侣 v3.3.1
+私人 AI 伴侣 v3.4
 
 <br>
 
@@ -1214,7 +1229,9 @@ function renderRelState(){
         lines.push(`最近：${s.lastTopic}`);
     }
 
-    box.innerText = s.lastTopic ? lines.join("\n\n") : "刚开始陪伴";
+    box.innerText = s.lastTopic ? lines.join("
+
+") : "刚开始陪伴";
 
 }
 
@@ -1246,7 +1263,8 @@ let noteText =
 notes
 .slice(-10)
 .map(n=>n.note)
-.join("\n");
+.join("
+");
 
 
 
@@ -1579,7 +1597,8 @@ chatHistory
 m=>
 `${m.role==="user"?"芋圆":"晏霁"}：${m.content}`
 )
-.join("\n");
+.join("
+");
 
 
 
@@ -1593,7 +1612,8 @@ let prompt=`
 请从下面聊天中提取芋圆的重要信息。
 
 已有自动记忆：
-${loadImportantNotes().map(n=>n.note).join("\n") || "暂无"}
+${loadImportantNotes().map(n=>n.note).join("
+") || "暂无"}
 
 如果新信息与已有记忆语义重复，不要重复记录。
 
@@ -2492,7 +2512,8 @@ chatHistory
 m=>
 `${m.role==="user"?"芋圆":"晏霁"}：${m.content}`
 )
-.join("\n");
+.join("
+");
 
 
 
@@ -2775,13 +2796,24 @@ function postMoment(content){
   setTimeout(()=>yanjieAutoComment(moments[0].id), 1200);
 }
 
+function deleteMoment(id){
+  if(confirm("确定要删除这条朋友圈动态吗？")){
+    let moments = loadMoments();
+    moments = moments.filter(x => x.id !== id);
+    saveMoments(moments);
+    renderMoments();
+  }
+}
+
 async function autoMoment(){
   if(chatHistory.length < 2){
     alert("还没有足够的对话内容。");
     return;
   }
-  let recent = chatHistory.slice(-10).map(m=>`${m.role==="user"?"芋圆":"晏霁"}：${m.content}`).join("\n");
-  let prompt = `根据下面的聊天记录，用第一人称帮芋圆写一条朋友圈动态，语气轻松自然，50字以内，不要加标签或emoji说明，只输出动态正文：\n${recent}`;
+  let recent = chatHistory.slice(-10).map(m=>`${m.role==="user"?"芋圆":"晏霁"}：${m.content}`).join("
+");
+  let prompt = `根据下面的聊天记录，用第一人称帮芋圆写一条朋友圈动态，语气轻松自然，50字以内，不要加标签或emoji说明，只输出动态正文：
+${recent}`;
   try{
     let r = await puter.ai.chat(prompt, {model:"claude-sonnet-4-6"});
     let text = Array.isArray(r.message?.content)
@@ -2879,6 +2911,7 @@ function renderMoments(){
   <div class="moments-actions">
     <button class="moments-like-btn ${m.liked?"liked":""}" onclick="toggleLike(${m.id})">${likeStr}</button>
     <button class="moments-comment-btn" onclick="document.getElementById('comment-input-${m.id}').focus()">评论</button>
+    <button class="moments-delete-btn" onclick="deleteMoment(${m.id})">删除</button>
   </div>
   ${m.comments.length>0?`<div class="moments-comments">${m.comments.map(c=>`<div class="moments-comment-item"><span class="moments-comment-name">${c.author==="yuyuan"?"芋圆":"晏霁"}</span>：${escapeHtml(c.text)}</div>`).join("")}</div>`:""}
   <div class="moments-input-row">
@@ -2899,6 +2932,57 @@ document.addEventListener("DOMContentLoaded", ()=>{
     if(badge) badge.innerText = s.moodLabel;
   }
 });
+
+
+
+// =============================
+// v3.4 数据备份系统（保持原框架）
+// =============================
+
+function exportYanJiData(){
+    const data={
+        version:"3.4",
+        exportTime:new Date().toISOString(),
+        chatHistory:JSON.parse(localStorage.getItem("chatHistory")||"[]"),
+        memory:localStorage.getItem("memory")||"",
+        importantNotes:JSON.parse(localStorage.getItem("importantNotes")||"[]"),
+        relState:JSON.parse(localStorage.getItem("yj_relstate")||"{}"),
+        diary:JSON.parse(localStorage.getItem("diary")||"[]"),
+        moments:JSON.parse(localStorage.getItem("moments")||"[]")
+    };
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+    const a=document.createElement("a");
+    a.href=URL.createObjectURL(blob);
+    a.download="yanji-backup-"+Date.now()+".json";
+    a.click();
+    URL.revokeObjectURL(a.href);
+}
+
+function importYanJiData(){
+    const input=document.getElementById("yanjiImportFile");
+    if(!input)return;
+    input.click();
+    input.onchange=function(){
+        const file=input.files[0];
+        if(!file)return;
+        const reader=new FileReader();
+        reader.onload=function(){
+            try{
+                const d=JSON.parse(reader.result);
+                if(d.chatHistory)localStorage.setItem("chatHistory",JSON.stringify(d.chatHistory));
+                if(d.memory)localStorage.setItem("memory",d.memory);
+                if(d.importantNotes)localStorage.setItem("importantNotes",JSON.stringify(d.importantNotes));
+                if(d.relState)localStorage.setItem("yj_relstate",JSON.stringify(d.relState));
+                if(d.diary)localStorage.setItem("diary",JSON.stringify(d.diary));
+                if(d.moments)localStorage.setItem("moments",JSON.stringify(d.moments));
+                alert("晏霁数据恢复成功，请刷新页面。");
+            }catch(e){
+                alert("导入失败，文件格式错误。");
+            }
+        };
+        reader.readAsText(file);
+    };
+}
 
 </script>
 </body>
