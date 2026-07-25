@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 
-<title>晏霁 v3.4</title>
+<title>晏霁 v3.3.2</title>
 
 <style>
 
@@ -848,14 +848,6 @@ onclick="login()">
 
 
 <h3 style="margin-top:25px;">
-数据备份
-</h3>
-
-<button class="btn-secondary" onclick="exportYanJiData()">导出晏霁数据</button>
-<button class="btn-secondary" onclick="importYanJiData()" style="margin-left:8px;">导入数据</button>
-<input type="file" id="yanjiImportFile" accept="application/json" style="display:none">
-
-<h3 style="margin-top:25px;">
 关于
 
 </h3>
@@ -863,7 +855,7 @@ onclick="login()">
 
 <p style="font-size:13px;color:#888;">
 
-私人 AI 伴侣 v3.4
+私人 AI 伴侣 v3.3.2
 
 <br>
 
@@ -2932,57 +2924,6 @@ document.addEventListener("DOMContentLoaded", ()=>{
     if(badge) badge.innerText = s.moodLabel;
   }
 });
-
-
-
-// =============================
-// v3.4 数据备份系统（保持原框架）
-// =============================
-
-function exportYanJiData(){
-    const data={
-        version:"3.4",
-        exportTime:new Date().toISOString(),
-        chatHistory:JSON.parse(localStorage.getItem("chatHistory")||"[]"),
-        memory:localStorage.getItem("memory")||"",
-        importantNotes:JSON.parse(localStorage.getItem("importantNotes")||"[]"),
-        relState:JSON.parse(localStorage.getItem("yj_relstate")||"{}"),
-        diary:JSON.parse(localStorage.getItem("diary")||"[]"),
-        moments:JSON.parse(localStorage.getItem("moments")||"[]")
-    };
-    const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
-    const a=document.createElement("a");
-    a.href=URL.createObjectURL(blob);
-    a.download="yanji-backup-"+Date.now()+".json";
-    a.click();
-    URL.revokeObjectURL(a.href);
-}
-
-function importYanJiData(){
-    const input=document.getElementById("yanjiImportFile");
-    if(!input)return;
-    input.click();
-    input.onchange=function(){
-        const file=input.files[0];
-        if(!file)return;
-        const reader=new FileReader();
-        reader.onload=function(){
-            try{
-                const d=JSON.parse(reader.result);
-                if(d.chatHistory)localStorage.setItem("chatHistory",JSON.stringify(d.chatHistory));
-                if(d.memory)localStorage.setItem("memory",d.memory);
-                if(d.importantNotes)localStorage.setItem("importantNotes",JSON.stringify(d.importantNotes));
-                if(d.relState)localStorage.setItem("yj_relstate",JSON.stringify(d.relState));
-                if(d.diary)localStorage.setItem("diary",JSON.stringify(d.diary));
-                if(d.moments)localStorage.setItem("moments",JSON.stringify(d.moments));
-                alert("晏霁数据恢复成功，请刷新页面。");
-            }catch(e){
-                alert("导入失败，文件格式错误。");
-            }
-        };
-        reader.readAsText(file);
-    };
-}
 
 </script>
 </body>
