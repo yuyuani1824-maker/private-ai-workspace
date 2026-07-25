@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
 
-<title>晏霁 v3.4</title>
+<title>晏霁 v3.5.2</title>
 
 <style>
 
@@ -624,56 +624,73 @@ body{
 }
 
 
-/* ===== 晏霁 v3.5.1 移动端布局修正 ===== */
-html, body {
-    width: 100%;
-    height: 100%;
-    height: 100dvh;
-    overflow: hidden;
+/* ===== v3.5.2 移动端稳定布局 ===== */
+html,body{
+    width:100%;
+    height:100%;
+    height:100dvh;
+    overflow:hidden;
 }
-
-body {
-    display: flex;
-    flex-direction: column;
+body{
+    align-items:center;
 }
-
-#chatBox,
-.chat-box,
-.messages {
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow-y: auto;
-    padding-bottom: 10px;
+.app{
+    height:100dvh;
+    min-height:0;
 }
-
-.message,
-.bubble {
-    max-width: 75%;
-    padding: 12px 16px;
-    line-height: 1.5;
-    box-sizing: border-box;
+.main-content{
+    min-height:0;
 }
-
-#dogScene,
-.dog-scene,
-.scene {
-    max-height: 150px;
-    overflow: hidden;
-    flex: 0 0 auto;
+#chatPageWrapper{
+    min-height:0;
 }
-
-.input-area,
-.chat-input-area {
-    flex: 0 0 auto;
+#chat{
+    min-height:0;
+    overflow-y:auto;
+    padding:10px 12px;
+    gap:8px;
 }
-
-@media (max-width:600px) {
-    .message,
-    .bubble {
-        max-width: 78%;
-        padding: 10px 14px;
+.msg-row{
+    max-width:78%;
+}
+.bubble{
+    padding:8px 11px;
+    font-size:15px;
+    line-height:1.4;
+}
+.input-area{
+    flex-shrink:0;
+    padding:8px;
+}
+nav{
+    flex-shrink:0;
+    min-height:52px;
+}
+nav button{
+    padding:10px 0;
+}
+@media(max-width:600px){
+    .app{
+        max-width:100%;
+        box-shadow:none;
+    }
+    header{
+        padding:10px;
     }
 }
+
+.heart-status{
+    flex-shrink:0;
+    margin:8px 12px 0;
+    padding:8px 12px;
+    background:#fff;
+    border-radius:12px;
+    border:1px solid #eee;
+    font-size:13px;
+}
+.heart-name{font-weight:600;font-size:15px;}
+.heart-value{margin-top:3px;color:#e05a7a;}
+.heart-state{font-size:12px;color:#777;}
 
 </style>
 </head>
@@ -688,6 +705,12 @@ body {
 
 
 <div class="main-content">
+<div class="heart-status">
+    <div class="heart-name">晏霁</div>
+    <div class="heart-value">❤️ <span id="heartRate">74</span> BPM</div>
+    <div class="heart-state">状态：平静</div>
+</div>
+
 
 
 <!-- 聊天页面 -->
@@ -3059,6 +3082,18 @@ function importYanJiData(){
     };
 }
 
+</script>
+
+<script>
+(function(){
+function updateHeart(){
+ const el=document.getElementById("heartRate");
+ if(el){
+   el.textContent=70+Math.floor(Math.random()*11);
+ }
+}
+setInterval(updateHeart,5000);
+})();
 </script>
 </body>
 </html>
