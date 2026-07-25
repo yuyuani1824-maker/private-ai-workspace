@@ -1229,11 +1229,7 @@ function renderRelState(){
         lines.push(`最近：${s.lastTopic}`);
     }
 
-    box.innerText = s.lastTopic ? lines.join("
-
-") : "刚开始陪伴";
-
-}
+    box.innerText = s.lastTopic ? lines.join("\n") : "刚开始陪伴";
 
 
 
@@ -1259,12 +1255,7 @@ loadImportantNotes();
 
 
 
-let noteText =
-notes
-.slice(-10)
-.map(n=>n.note)
-.join("
-");
+let noteText = notes.slice(-10).map(n=>n.note).join("\n");
 
 
 
@@ -1590,15 +1581,7 @@ async function extractImportantNotes(){
 try{
 
 
-let recent =
-chatHistory
-.slice(-20)
-.map(
-m=>
-`${m.role==="user"?"芋圆":"晏霁"}：${m.content}`
-)
-.join("
-");
+let recent = chatHistory.slice(-20).map(m=>`${m.role==="user"?"芋圆":"晏霁"}：${m.content}`).join("\n");
 
 
 
@@ -2505,15 +2488,7 @@ status.innerText=
 try{
 
 
-let recent =
-chatHistory
-.slice(-6)
-.map(
-m=>
-`${m.role==="user"?"芋圆":"晏霁"}：${m.content}`
-)
-.join("
-");
+let recent = chatHistory.slice(-6).map(m=>`${m.role==="user"?"芋圆":"晏霁"}：${m.content}`).join("\n");
 
 
 
