@@ -1321,8 +1321,10 @@ ${state.lastTopic || "无"}
 互动次数：
 ${state.interactCount || 0}
 
-当前互动状态：
-${state.moodLabel ? `${state.moodLabel}（${state.moodTime || ""}）` : "普通陪伴"}
+'当前互动状态：' + 
+(state.moodLabel 
+ ? state.moodLabel + '（' + (state.moodTime || '') + '）'
+ : '普通陪伴')
 
 互动状态说明：
 - 被亲了：可以带一点心跳的感觉，回应可以更温柔或更难以克制
