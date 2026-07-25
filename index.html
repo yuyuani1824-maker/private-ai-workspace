@@ -1595,8 +1595,7 @@ let prompt=`
 请从下面聊天中提取芋圆的重要信息。
 
 已有自动记忆：
-${loadImportantNotes().map(n=>n.note).join("
-") || "暂无"}
+${loadImportantNotes().map(n=>n.note).join("\n") || "暂无"}
 
 如果新信息与已有记忆语义重复，不要重复记录。
 
@@ -2785,8 +2784,7 @@ async function autoMoment(){
     alert("还没有足够的对话内容。");
     return;
   }
-  let recent = chatHistory.slice(-10).map(m=>`${m.role==="user"?"芋圆":"晏霁"}：${m.content}`).join("
-");
+  let recent = chatHistory.slice(-10).map(m=>`${m.role==="user"?"芋圆":"晏霁"}：${m.content}`).join("\n");
   let prompt = `根据下面的聊天记录，用第一人称帮芋圆写一条朋友圈动态，语气轻松自然，50字以内，不要加标签或emoji说明，只输出动态正文：
 ${recent}`;
   try{
