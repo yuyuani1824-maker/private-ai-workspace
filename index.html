@@ -953,6 +953,46 @@ class="card">
 
 </div>
 
+
+<!-- v3.5.6 健康中心 -->
+<div id="health" class="panel">
+<h3>健康中心</h3>
+
+<div class="card">
+<h4>晏霁状态</h4>
+<p>❤️ <span id="healthBpm">73</span> BPM</p>
+<p>状态：互动升温</p>
+</div>
+
+<div class="card">
+<h4>生理期管理</h4>
+<input id="periodDate" type="date">
+<input id="periodCycle" type="number" placeholder="周期天数">
+<button class="btn-secondary" onclick="saveHealth()">保存</button>
+</div>
+
+<div class="card">
+<h4>喝水计划</h4>
+<input id="waterGoal" type="number" placeholder="每日目标(ml)">
+<input id="waterInterval" type="number" placeholder="提醒间隔(分钟)">
+<button class="btn-secondary" onclick="saveHealth()">保存</button>
+</div>
+
+<div class="card">
+<h4>睡眠记录</h4>
+<input id="sleepTime" placeholder="入睡时间">
+<input id="sleepHours" placeholder="睡眠时长">
+<button class="btn-secondary" onclick="saveHealth()">保存</button>
+</div>
+
+<div class="card">
+<h4>提醒管理</h4>
+<textarea id="healthReminder" placeholder="输入提醒"></textarea>
+<button class="btn-secondary" onclick="addReminder()">添加提醒</button>
+<div id="reminderList"></div>
+</div>
+</div>
+
 <!-- 设置 -->
 
 
@@ -1077,7 +1117,7 @@ onclick="switchTab('setting')">
 
 
 
-<button onclick="switchTab('settingExtraPanel')">健康</button>
+<button id="nav-health" onclick="switchTab('health')">健康</button>
 </nav>
 
 
@@ -3815,6 +3855,51 @@ window.switchTab=function(id){
 
 })();
 
+
+// ===== v3.5.6 稳定修复 =====
+function getHealthData(){
+ try{return JSON.parse(localStorage.getItem("healthData"))||{
+ period:{},water:{},sleep:{},reminders:[]
+ }}catch(e){return {period:{},water:{},sleep:{},reminders:[]}}
+}
+function saveHealth(){
+ let d=getHealthData();
+ d.period.date=document.getElementById("periodDate")?.value||"";
+ d.period.cycle=document.getElementById("periodCycle")?.value||"";
+ d.water.goal=document.getElementById("waterGoal")?.value||"";
+ d.water.interval=document.getElementById("waterInterval")?.value||"";
+ d.sleep.time=document.getElementById("sleepTime")?.value||"";
+ d.sleep.hours=document.getElementById("sleepHours")?.value||"";
+ localStorage.setItem("healthData",JSON.stringify(d));
+}
+function addReminder(){
+ let d=getHealthData();
+ let t=document.getElementById("healthReminder").value.trim();
+ if(t)d.reminders.push(t);
+ localStorage.setItem("healthData",JSON.stringify(d));
+ renderHealth();
+}
+function renderHealth(){
+ let d=getHealthData();
+ let box=document.getElementById("reminderList");
+ if(box) box.innerHTML=d.reminders.map((x,i)=>`<p>${x} <button class="btn-secondary" onclick="removeReminder(${i})">删除</button></p>`).join("")||"暂无提醒";
+}
+function removeReminder(i){
+ let d=getHealthData();d.reminders.splice(i,1);
+ localStorage.setItem("healthData",JSON.stringify(d));renderHealth();
+}
+const oldSwitchTab=switchTab;
+switchTab=function(id){
+ oldSwitchTab(id);
+ if(id==="health"){
+  document.getElementById("health").style.display="block";
+  document.getElementById("headerTitle").innerText="健康中心";
+  renderHealth();
+ }
+};
+
+// AI fallback
+const oldSend=window.send;
 </script>
 
 </body>
